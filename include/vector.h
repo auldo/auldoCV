@@ -105,11 +105,13 @@ public:
 
     /// Appends array elements and returns the built string.
     USE_RETURN std::string to_string() const {
-        std::string result;
+        std::string result{"["};
         for(const auto& elem : *this) {
-            result += std::to_string(elem);
+            result += std::to_string(elem) + ",";
         }
-        return result;
+        if(_size > 0)
+            result.pop_back();
+        return result + "]";
     }
 };
 

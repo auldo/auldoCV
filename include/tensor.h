@@ -34,6 +34,10 @@ public:
     /// Creates a scalar tensor i.e., a tensor having rank 0 and one dimension of length 1 with one element.
     explicit tensor(const tensor_type& scalar): _dimensions({1}), _data({scalar}) {}
 
+    USE_RETURN size_t get_dimension(unsigned index) const {
+        return _dimensions[index];
+    }
+
     /// Copy-assigns a scalar to this vector leading to a rank 0 tensor with one element.
     tensor& operator=(const tensor_type& scalar) {
         this->_dimensions = {1};
@@ -131,6 +135,13 @@ public:
         if(_dimensions.multiplied_sum() != dimensions.multiplied_sum())
             throw std::invalid_argument("can't resize tensor");
         _dimensions = std::move(_dimensions);
+    }
+
+    void set_pixel(unsigned long r, unsigned long c, vector<tensor_type> pixel) {
+        if(this->rank() != 3)
+            throw std::invalid_argument("rank 3 required");
+        for(unsigned long i{0}; i < pixel.size(); ++i)
+            operator[]({r, c, i}) = pixel[i];
     }
 
     // Iterators over the linearized array.
