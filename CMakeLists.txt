@@ -13,6 +13,7 @@ add_executable(linear_regression src/playground.cpp
         src/read/tab_reparated.cpp
         src/read/util.cpp
         src/read/read_image.cpp
-        src/write/write_image.cpp)
+        src/write/write_image.cpp
+        src/computational_graph/computational_graph_node.cpp)
 
 target_link_libraries(linear_regression ${OpenCV_LIBS})

@@ -10,6 +10,9 @@
 #include "read/tab_separated.h"
 #include "read/read_image.h"
 
+//computational graphs
+#include "computational_graph/computational_graph_node.h"
+
 //writer
 #include "write/write_image.h"
 
