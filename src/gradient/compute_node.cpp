@@ -13,6 +13,7 @@ ComputeNode::ComputeNode(ComputeNodeType op, std::vector<std::shared_ptr<Compute
 
 
 PRECISE_NBR ComputeNode::forwardPass() {
+    clear();
     for(const auto& node : _incoming)
         forwardPassCache.push_back(node->forwardPass());
 
@@ -144,8 +145,8 @@ void ComputeNode::setScalarValue(double scalar) {
 }
 
 void ComputeNode::clear() {
-    forwardPassCache.clear();
-    _gradients.clear();
     for(auto& elem : _incoming)
         elem->clear();
+    forwardPassCache.clear();
+    _gradients.clear();
 }
