@@ -2,19 +2,19 @@
 
 ComputeNode::ComputeNode(PRECISE_NBR scalar): _scalar(scalar), _type(SCALAR) {}
 
-ComputeNode::ComputeNode(ComputeNodeType op, std::vector<std::shared_ptr<ComputeNode>> incoming): _type(op), _incoming(std::move(incoming)) {
+ComputeNode::ComputeNode(ComputeNodeType op, ComputeNodeDynamicArgs dynamicArgs): _type(op), _dynamicArgs(std::move(dynamicArgs)) {
     if(op == SCALAR)
         throw std::runtime_error("SCALAR type not allowed as operator.");
 }
 
-ComputeNode::ComputeNode(const ComputeNodeType op, std::vector<PRECISE_NBR> const_args): _type(op), _const_args(std::move(const_args)) {}
+ComputeNode::ComputeNode(const ComputeNodeType op, ComputeNodeConstArgs constArgs): _type(op), _constArgs(std::move(constArgs)) {}
 
-ComputeNode::ComputeNode(ComputeNodeType op, std::vector<std::shared_ptr<ComputeNode> > incoming, std::vector<PRECISE_NBR> const_args): _type(op), _incoming(std::move(incoming)), _const_args(std::move(const_args)) {}
+ComputeNode::ComputeNode(ComputeNodeType op, ComputeNodeDynamicArgs dynamicArgs, ComputeNodeConstArgs constArgs): _type(op), _dynamicArgs(std::move(dynamicArgs)), _constArgs(std::move(constArgs)) {}
 
 
 PRECISE_NBR ComputeNode::forwardPass() {
     clear();
-    for(const auto& node : _incoming)
+    for(const auto& node : _dynamicArgs)
         forwardPassCache.push_back(node->forwardPass());
 
     if(_type == SCALAR)
@@ -27,22 +27,22 @@ PRECISE_NBR ComputeNode::forwardPass() {
         return forwardPassCache.at(0) * forwardPassCache.at(1);
 
     if(_type == OP_TIMES_CONST)
-        return forwardPassCache.at(0) * _const_args.at(0);
+        return forwardPassCache.at(0) * _constArgs.at(0);
 
     if(_type == FN_EXP)
         return exp(forwardPassCache.at(0));
 
     if(_type == OP_PLUS_CONST)
-        return forwardPassCache.at(0) + _const_args.at(0);
+        return forwardPassCache.at(0) + _constArgs.at(0);
 
     if(_type == OP_DIV_CONST_DIVIDEND)
-        return _const_args.at(0) / forwardPassCache.at(0);
+        return _constArgs.at(0) / forwardPassCache.at(0);
 
     if(_type == FN_RELU)
         return forwardPassCache.at(0) > 0 ? forwardPassCache.at(0) : 0;
 
     if(_type == OP_POW_CONST_EXPONENT)
-        return pow(forwardPassCache.at(0), _const_args.at(0));
+        return pow(forwardPassCache.at(0), _constArgs.at(0));
 
     if(_type == OP_DIV)
         return forwardPassCache.at(0) / forwardPassCache.at(1);
@@ -67,7 +67,7 @@ PRECISE_NBR ComputeNode::derivative(INDEX_NBR idx) const {
         return 1;
 
     if(_type == OP_TIMES_CONST)
-        return _const_args.at(0);
+        return _constArgs.at(0);
 
     if(_type == FN_EXP)
         return exp(forwardPassCache.at(0));
@@ -79,13 +79,13 @@ PRECISE_NBR ComputeNode::derivative(INDEX_NBR idx) const {
      * Partial derivative d(c / x) / d(x) = (-1 * c) / x^2
      */
     if(_type == OP_DIV_CONST_DIVIDEND)
-        return (-1.f * _const_args.at(0)) / static_cast<float>(pow(forwardPassCache.at(0), 2));
+        return (-1.f * _constArgs.at(0)) / static_cast<float>(pow(forwardPassCache.at(0), 2));
 
     if(_type == FN_RELU)
         return forwardPassCache.at(0) > 0 ? 1 : 0;
 
     if(_type == OP_POW_CONST_EXPONENT)
-        return _const_args.at(0) * pow(forwardPassCache.at(0), _const_args.at(0) - 1);
+        return _constArgs.at(0) * pow(forwardPassCache.at(0), _constArgs.at(0) - 1);
 
     /*
      * Partial derivative of d(a / b) / d(a) = 1/b
@@ -115,8 +115,8 @@ void ComputeNode::backwardPass(std::optional<PRECISE_NBR> current) {
         der = current.value();
     }
     _gradients.push_back(der);
-    for(unsigned long i{0}; i < _incoming.size(); ++i) {
-        _incoming.at(i)->backwardPass(der * derivative(i));
+    for(INDEX_NBR i{0}; i < _dynamicArgs.size(); ++i) {
+        _dynamicArgs.at(i)->backwardPass(der * derivative(i));
     }
 }
 
@@ -145,7 +145,7 @@ void ComputeNode::setScalarValue(double scalar) {
 }
 
 void ComputeNode::clear() {
-    for(auto& elem : _incoming)
+    for(auto& elem : _dynamicArgs)
         elem->clear();
     forwardPassCache.clear();
     _gradients.clear();

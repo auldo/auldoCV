@@ -2,25 +2,29 @@
 #include <optional>
 #include <vector>
 #include <iostream>
+#include <data/vector.h>
 
 #include "constants.h"
-#include "gradient/compute_node_functions.h"
 #include "gradient/compute_node_type.h"
+#include <gradient/compute_node_functions.h>
 
 /// A node in a computational graph.
 /// Primarily used to apply the chain rule to complex functions.
 class ComputeNode {
+
+    using ComputeNodeDynamicArgs = Vector<std::shared_ptr<ComputeNode>>;
+    using ComputeNodeConstArgs = Vector<PRECISE_NBR>;
 
     /// Describes the type, which may be a function, scalar or operator involving one or multiple constants and variables.
     ComputeNodeType _type;
 
     /// The list of constants used by the node.
     /// E.g., the OP_PLUS_CONST type requires one variable and one const summand.
-    std::vector<PRECISE_NBR> _const_args;
+    Vector<PRECISE_NBR> _constArgs;
 
     /// The vector of refs to incoming computational graph nodes.
     /// Required for recursive forward pass and backward pass.
-    std::vector<std::shared_ptr<ComputeNode>> _incoming;
+    Vector<std::shared_ptr<ComputeNode>> _dynamicArgs;
 
     /// Holds a value if type is scalar.
     /// Primarily used for variable inputs to the graph.
@@ -33,17 +37,19 @@ class ComputeNode {
 
 public:
 
+    explicit ComputeNode(ComputeNodeType type);
+
     /// Creates a computational graph node of SCALAR type.
     explicit ComputeNode(PRECISE_NBR scalar);
 
     /// Creates a computational node of any type with children graph nodes.
-    ComputeNode(ComputeNodeType op, std::vector<std::shared_ptr<ComputeNode>> incoming);
+    ComputeNode(ComputeNodeType op, ComputeNodeDynamicArgs dynamicArgs);
 
     /// Creates a computational node of any type with const args.
-    ComputeNode(ComputeNodeType op, std::vector<PRECISE_NBR> _const_args);
+    ComputeNode(ComputeNodeType op, ComputeNodeConstArgs constArgs);
 
     /// Creates a computational node of any type with children graph nodes and const args.
-    ComputeNode(ComputeNodeType op, std::vector<std::shared_ptr<ComputeNode>> incoming, std::vector<PRECISE_NBR> _const_args);
+    ComputeNode(ComputeNodeType op, ComputeNodeDynamicArgs dynamicArgs, ComputeNodeConstArgs constArgs);
 
     /// The cache of the forward pass.
     std::vector<PRECISE_NBR> forwardPassCache{};

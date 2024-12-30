@@ -31,9 +31,9 @@ public:
 
     /// Moves the vector to the assigned variable, leaving the moved vector empty.
     Vector &operator=(Vector &&other)  noexcept {
-        this->reset_size(other._size);
+        this->resize(other._size);
         this->_data = std::move(other._data);
-        other.reset_size(0);
+        other.resize(0);
         return *this;
     }
 
@@ -56,20 +56,20 @@ public:
 
     /// Sets size to a certain size.
     /// Doesn't care about what's in the vector, so data may be "lost".
-    void reset_size(size_t size) {
+    void resize(size_t size) {
         this->_size = size;
         this->_data = std::make_unique<VECTOR_TYPE[]>(size);
     }
 
     /// Accesses element at certain index, may throw out of range.
-    VECTOR_TYPE& operator[](size_t idx) {
+    VECTOR_TYPE& at(size_t idx) {
         if(idx >= this->_size)
             throw std::out_of_range("index out of range");
         return this->_data[idx];
     }
 
     /// Const-access to element at certain index, may throw out of range.
-    const VECTOR_TYPE& operator[](size_t idx) const {
+    const VECTOR_TYPE& at(size_t idx) const {
         if(idx >= this->_size)
             throw std::out_of_range("index out of range");
         return this->_data[idx];
@@ -90,11 +90,11 @@ public:
     USE_RETURN VECTOR_TYPE multiplied_sum_last_n(const size_t n) const {
         VECTOR_TYPE sum{this->_size == 0 ? static_cast<VECTOR_TYPE>(0) : static_cast<VECTOR_TYPE>(1)};
         for(auto i{0}; i < n; ++i) {
-            sum *= this->operator[](this->_size - 1 - i);
+            sum *= this->at(this->_size - 1 - i);
         }
         return sum;
     }
 
     /// Returns the size of the array.
-    USE_RETURN VECTOR_TYPE size() const { return _size; }
+    USE_RETURN INDEX_NBR size() const { return _size; }
 };

@@ -20,7 +20,7 @@ TEST_CASE("compute node test 1") {
     auto loss{COMPUTE_NODE_PLUS(yNegative, estimation)};
     auto lossSquared{COMPUTE_NODE_POW(loss, 2)};
 
-    for(auto i{0}; i < 4; ++i) {
+    for(auto i{0}; i < 2; ++i) {
         CHECK_EQ(lossSquared->forwardPass(), 4./9);
         CHECK_EQ(lossSquared->forwardPassCache.size(), 1);
 

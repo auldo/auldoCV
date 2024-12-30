@@ -35,9 +35,9 @@ class tensor {
             auto idx{indices.size() - i - 1};
             auto sum{1};
             for(auto i2{idx+1}; i2 < indices.size(); ++i2) {
-                sum *= _dimensions[i2];
+                sum *= _dimensions.at(i2);
             }
-            index += (indices[idx] * sum);
+            index += (indices.at(idx) * sum);
         }
         return index;
     }
@@ -53,10 +53,10 @@ class tensor {
             size_t prod{_dimensions.multiplied_sum_last_n(last_n)};
             size_t divisor{index / prod};
             index = index - prod * divisor;
-            result[_dimensions.size() - 1 - last_n] = divisor;
+            result.at(_dimensions.size() - 1 - last_n) = divisor;
             --last_n;
         }
-        result[_dimensions.size() - 1] = index % _dimensions[_dimensions.size() - 1];
+        result.at(_dimensions.size() - 1) = index % _dimensions.at(_dimensions.size() - 1);
         return result;
     }
 
@@ -80,7 +80,7 @@ public:
     tensor(): _data(), _dimensions() {}
 
     USE_RETURN size_t shapeSize(unsigned index) const {
-        return _dimensions[index];
+        return _dimensions.at(index);
     }
 
     /// Copy-assigns a scalar to this vector leading to a rank 0 tensor with one element.
@@ -96,7 +96,7 @@ public:
         if(indices.size() != _dimensions.size())
             throw std::invalid_argument("expected "  + std::to_string(_dimensions.size()) + " indices.");
         for(auto i{0}; i < _dimensions.size(); ++i) {
-            if(indices[i] >= _dimensions[i])
+            if(indices.at(i) >= _dimensions.at(i))
                 throw std::out_of_range("index out of range");
         }
         auto index{_transform_indices(indices)};
