@@ -114,21 +114,22 @@ void ComputeNode::backwardPass(std::optional<PRECISE_NBR> current) {
     } else {
         der = current.value();
     }
-    _gradients.push_back(der);
+    if(_gradient == std::nullopt)
+        _gradient = der;
+    else
+        _gradient = _gradient.value() + der;
     for(INDEX_NBR i{0}; i < _dynamicArgs.size(); ++i) {
         _dynamicArgs.at(i)->backwardPass(der * derivative(i));
     }
 }
 
 PRECISE_NBR ComputeNode::gradient() {
-    if(_gradients.empty())
+    if(_gradient == std::nullopt)
         throw std::runtime_error("no gradients in computational graph");
     PRECISE_NBR result{0};
-    for(auto i{0}; i < _gradients.size(); ++i) {
-        result += _gradients[i];
-    }
-    _gradients.clear();
-    return result;
+    auto gradient{_gradient.value()};
+    _gradient = std::nullopt;
+    return gradient;
 }
 
 void ComputeNode::assertScalar() const {
@@ -148,5 +149,5 @@ void ComputeNode::clear() {
     for(auto& elem : _dynamicArgs)
         elem->clear();
     forwardPassCache.clear();
-    _gradients.clear();
+    _gradient = std::nullopt;
 }

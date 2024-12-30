@@ -31,9 +31,9 @@ class ComputeNode {
     /// Shouldn't be used for const values.
     std::optional<PRECISE_NBR> _scalar;
 
-    /// Stores the gradients from the backward pass.
-    /// Those are added up on retrieve gradient on a certain node.
-    std::vector<PRECISE_NBR> _gradients;
+    /// Stores the gradient from the backward pass.
+    /// Those are added up.
+    std::optional<PRECISE_NBR> _gradient;
 
 public:
 
