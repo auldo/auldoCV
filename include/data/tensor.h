@@ -1,23 +1,22 @@
 #pragma once
-#include <ostream>
 #include <stdexcept>
 #include <string>
 
 #include "vector.h"
 
-template <typename tensor_type>
-class tensor {
+template <typename TENSOR_TYPE>
+class Tensor {
 
     // Iterator types
-    using tensor_iterator = tensor_type*;
-    using const_tensor_iterator = const tensor_type *;
+    using tensor_iterator = TENSOR_TYPE*;
+    using const_tensor_iterator = const TENSOR_TYPE *;
 
     /// The linearized data.
-    Vector<tensor_type> _data{0};
+    Vector<TENSOR_TYPE> _data{0};
 
     /// The dimensionality of the tensor.
     /// E.g., a matrix with 3 rows and 4 columns would have the value {3, 4}.
-    Vector<size_t> _dimensions{0};
+    Vector<INDEX_NBR> _dimensions{0};
 
     /**
     * Answers the question: When storing an n-dimensional array linearized (i.e. in a one-dimensional array), which index do we look up for the set of indices { i1, i2, ..., in }?
@@ -68,23 +67,23 @@ class tensor {
 public:
 
     /// Creates a tensor of a certain size.
-    explicit tensor(Vector<size_t> dimensions) {
+    explicit Tensor(Vector<INDEX_NBR> dimensions) {
         _dimensions = std::move(dimensions);
-        _data.reset_size(_dimensions.multiplied_sum());
+        _data.resize(_dimensions.multiplied_sum());
     }
 
     /// Creates a scalar tensor i.e., a tensor having rank 0 and one dimension of length 1 with one element.
-    explicit tensor(const tensor_type& scalar): _dimensions({1}), _data({scalar}) {}
+    explicit Tensor(const TENSOR_TYPE& scalar): _dimensions({1}), _data({scalar}) {}
 
     /// Creates empty vector of size zero.
-    tensor(): _data(), _dimensions() {}
+    Tensor(): _data(), _dimensions() {}
 
     USE_RETURN size_t shapeSize(unsigned index) const {
         return _dimensions.at(index);
     }
 
     /// Copy-assigns a scalar to this vector leading to a rank 0 tensor with one element.
-    tensor& operator=(const tensor_type& scalar) {
+    Tensor& operator=(const TENSOR_TYPE& scalar) {
         this->_dimensions = {1};
         this->_data = {scalar};
         return *this;
@@ -92,7 +91,7 @@ public:
 
     /// Uses _transform_indices to access element at certain index and returns its reference.
     /// May throw out of range.
-    tensor_type& at(Vector<size_t> indices) {
+    TENSOR_TYPE& at(Vector<size_t> indices) {
         if(indices.size() != _dimensions.size())
             throw std::invalid_argument("expected "  + std::to_string(_dimensions.size()) + " indices.");
         for(auto i{0}; i < _dimensions.size(); ++i) {
@@ -100,7 +99,7 @@ public:
                 throw std::out_of_range("index out of range");
         }
         auto index{_transform_indices(indices)};
-        return _data[index];
+        return _data.at(index);
     }
 
     /// Terminology
@@ -115,7 +114,7 @@ public:
 
     /// Interprets tensor as scalar.
     /// Fails if tensor isn't a scalar (hasn't rank 0 conditions fulfilled).
-    USE_RETURN tensor_type& scalar() {
+    USE_RETURN TENSOR_TYPE& scalar() {
         if(rank() != 0)
             throw std::invalid_argument("rank must be 0");
         return this->at({0});

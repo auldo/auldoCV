@@ -3,12 +3,20 @@
 #include <memory>
 
 #define PRECISE_NBR double
+#define TO_PRECISE_NBR(x) static_cast<PRECISE_NBR>(x)
+
 #define INDEX_NBR unsigned int
+#define TO_INDEX_NBR(x) static_cast<INDEX_NBR>(x)
 
 #define PTR std::shared_ptr
 #define CREATE_PTR std::make_shared
 
 #define PIXEL std::uint8_t
+#define TO_PIXEL(x) static_cast<PIXEL>(x)
+
+#define TENSOR_REF(x) std::shared_ptr<Tensor<x>>
+#define VECTOR_REF(x) std::shared_ptr<Vector<x>>
+
 #define USE_RETURN [[nodiscard]]
 
 #define COMPUTE_NODE(x) CREATE_PTR<ComputeNode>(x)

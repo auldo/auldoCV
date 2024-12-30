@@ -29,3 +29,7 @@ TEST_CASE("compute node test 1") {
         CHECK_EQ(w2->gradient(), 4./9);
     }
 }
+
+TEST_CASE("read cifar batch") {
+    readCifar10Batch("/Users/dominikaulinger/Desktop/cifar10", CIFAR_10_BATCH_2);
+}
