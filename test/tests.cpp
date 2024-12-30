@@ -13,14 +13,14 @@ TEST_CASE("compute node test 1") {
     auto w1{COMPUTE_NODE(1./3.)};
     auto w2{COMPUTE_NODE(2)};
     auto y{COMPUTE_NODE(0)};
-    auto yNegative{COMPUTE_NODE_TIME_CONST(y, -1)};
+    auto yNegative{COMPUTE_NODE_TIMES_CONST(y, -1)};
     auto z{COMPUTE_NODE_TIMES(x, w1)};
     auto activation{COMPUTE_NODE_RELU(z)};
     auto estimation{COMPUTE_NODE_TIMES(activation, w2)};
     auto loss{COMPUTE_NODE_PLUS(yNegative, estimation)};
     auto lossSquared{COMPUTE_NODE_POW(loss, 2)};
 
-    for(auto i{0}; i < 2; ++i) {
+    for(auto i{0}; i < 4; ++i) {
         CHECK_EQ(lossSquared->forwardPass(), 4./9);
         CHECK_EQ(lossSquared->forwardPassCache.size(), 1);
 

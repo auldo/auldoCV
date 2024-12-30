@@ -29,7 +29,7 @@ PRECISE_NBR ComputeNode::forwardPass() {
     if(_type == OP_TIMES_CONST)
         return forwardPassCache.at(0) * _const_args.at(0);
 
-    if(_type == OP_EXP)
+    if(_type == FN_EXP)
         return exp(forwardPassCache.at(0));
 
     if(_type == OP_PLUS_CONST)
@@ -69,7 +69,7 @@ PRECISE_NBR ComputeNode::derivative(INDEX_NBR idx) const {
     if(_type == OP_TIMES_CONST)
         return _const_args.at(0);
 
-    if(_type == OP_EXP)
+    if(_type == FN_EXP)
         return exp(forwardPassCache.at(0));
 
     if(_type == OP_PLUS_CONST)
