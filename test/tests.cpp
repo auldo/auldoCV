@@ -52,6 +52,9 @@ TEST_CASE("subtensor") {
     CHECK_EQ(t.at({0, 0, 0}), 10);
     CHECK_THROWS(subTensor->at({0, 10}));
     CHECK_THROWS(subTensor->at({0}));
+
+    auto subTensor2{subTensor->operator[](0)};
+    CHECK_EQ(subTensor2->at({0}), 10);
 }
 
 TEST_CASE("read cifar batch") {

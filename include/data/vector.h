@@ -18,7 +18,7 @@ class Vector {
     std::shared_ptr<VECTOR_TYPE[]> _data{std::make_shared<VECTOR_TYPE[]>(0)};
 public:
 
-    /// Creates a sub-vector controlling the space within a given frame
+    /// Creates a sub-vector granting access to the space within a given frame
     Vector(Vector& other, std::pair<INDEX_NBR, INDEX_NBR> bounds) {
         _size = bounds.second - bounds.first + 1;
         _data = other._data;
