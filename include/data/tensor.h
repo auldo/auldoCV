@@ -143,12 +143,7 @@ public:
             throw std::runtime_error("bad rank");
     }
 
-    std::shared_ptr<Tensor> operator[](INDEX_NBR index) {
-        auto tensor{std::make_shared<Tensor>()};
-        tensor->_dimensions.resize(_dimensions.size() - 1);
-        for(INDEX_NBR i{1}; i < _dimensions.size(); ++i)
-            tensor->_dimensions.at(i - 1) = _dimensions.at(i);
-
+    void operator[](INDEX_NBR index) {
         Vector<INDEX_NBR> firstPosIndices(_dimensions.size(), 0);
         Vector<INDEX_NBR> lastPosIndices(_dimensions.size(), 0);
 
@@ -157,8 +152,5 @@ public:
 
         auto firstPos{_transform_indices(firstPosIndices)};
         auto lastPos{_transform_indices(lastPosIndices) - 1};
-
-        tensor->_data = Vector(_data, std::make_pair(firstPos, lastPos));
-        return tensor;
     };
 };
