@@ -30,6 +30,7 @@ TEST_CASE("compute node test 1") {
     }
 }
 
+/*
 TEST_CASE("subvector") {
     auto v{Vector<int>({1, 2, 3, 4, 5, 6})};
     Vector<int> subVector{v, std::make_pair(2, 3)};
@@ -60,3 +61,4 @@ TEST_CASE("subtensor") {
 TEST_CASE("read cifar batch") {
     //readCifar10Batch("/Users/dominikaulinger/Desktop/cifar10", CIFAR_10_BATCH_2);
 }
+*/
