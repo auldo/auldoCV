@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+#include <ostream>
 #include <stdexcept>
 #include <string>
 
@@ -6,7 +8,6 @@
 
 template <typename TENSOR_TYPE>
 class Tensor {
-
     // Iterator types
     using tensor_iterator = TENSOR_TYPE*;
     using const_tensor_iterator = const TENSOR_TYPE *;
@@ -18,6 +19,7 @@ class Tensor {
     /// E.g., a matrix with 3 rows and 4 columns would have the value {3, 4}.
     Vector<INDEX_NBR> _dimensions{0};
 
+public:
     /**
     * Answers the question: When storing an n-dimensional array linearized (i.e. in a one-dimensional array), which index do we look up for the set of indices { i1, i2, ..., in }?
     * In the following examples, Dimx (e.g., Dim1, Dim2) means "requested index at dimension x".
@@ -28,8 +30,8 @@ class Tensor {
     * Example for three dimensions: Idx = Dim1 * len(Dim2) * len(Dim3) + Dim2 * len(Dim3) + Dim3
     * This method formalizes the two examples for n >= 0 dimensions.
     */
-    USE_RETURN size_t _transform_indices(Vector<size_t>& indices) const {
-        size_t index{0};
+    USE_RETURN INDEX_NBR _transform_indices(Vector<INDEX_NBR>& indices) const {
+        INDEX_NBR index{0};
         for(auto i{0}; i < indices.size(); ++i) {
             auto idx{indices.size() - i - 1};
             auto sum{1};
@@ -43,14 +45,14 @@ class Tensor {
 
     /// Does the opposite as compared to _transform_indices.
     /// Transforms an index referencing the linearized array to an index usable in a multidimensional array.
-    USE_RETURN Vector<size_t> _transform_index(size_t index) const {
+    USE_RETURN Vector<INDEX_NBR> _transform_index(INDEX_NBR index) const {
         if(index > max_index())
             throw std::out_of_range("index out of range");
-        Vector<size_t> result(_dimensions.size());
-        size_t last_n{_dimensions.size() - 1}; //3
+        Vector<INDEX_NBR> result(_dimensions.size());
+        INDEX_NBR last_n{_dimensions.size() - 1}; //3
         while(last_n > 0) {
-            size_t prod{_dimensions.multiplied_sum_last_n(last_n)};
-            size_t divisor{index / prod};
+            INDEX_NBR prod{_dimensions.multiplied_sum_last_n(last_n)};
+            INDEX_NBR divisor{index / prod};
             index = index - prod * divisor;
             result.at(_dimensions.size() - 1 - last_n) = divisor;
             --last_n;
@@ -60,7 +62,7 @@ class Tensor {
     }
 
     /// Returns the maximum possible index of the linearized array.
-    USE_RETURN size_t max_index() const {
+    USE_RETURN INDEX_NBR max_index() const {
         return _dimensions.multiplied_sum() - 1;
     }
 
@@ -78,7 +80,7 @@ public:
     /// Creates empty vector of size zero.
     Tensor(): _data(), _dimensions() {}
 
-    USE_RETURN size_t shapeSize(unsigned index) const {
+    USE_RETURN INDEX_NBR shapeSize(unsigned index) const {
         return _dimensions.at(index);
     }
 
@@ -91,7 +93,7 @@ public:
 
     /// Uses _transform_indices to access element at certain index and returns its reference.
     /// May throw out of range.
-    TENSOR_TYPE& at(Vector<size_t> indices) {
+    TENSOR_TYPE& at(Vector<INDEX_NBR> indices) {
         if(indices.size() != _dimensions.size())
             throw std::invalid_argument("expected "  + std::to_string(_dimensions.size()) + " indices.");
         for(auto i{0}; i < _dimensions.size(); ++i) {
@@ -106,7 +108,7 @@ public:
     /// A scalar is represented as [value] and has rank 0.
     /// An array is of rank 1.
     /// A matrix (e.g., 4x3 is rank 2).
-    USE_RETURN size_t rank() const {
+    USE_RETURN INDEX_NBR rank() const {
         if(_dimensions.size() == 1 && _data.size() == 1)
             return 0;
         return _dimensions.size();
@@ -122,7 +124,7 @@ public:
 
     /// Resizes the vector to other dimensions.
     /// Only works if new size can be transferred into the same size of linearized array.
-    void resize(Vector<size_t>&& dimensions) {
+    void resize(Vector<INDEX_NBR>&& dimensions) {
         if(_dimensions.multiplied_sum() != dimensions.multiplied_sum())
             throw std::invalid_argument("can't resize tensor");
         _dimensions = std::move(_dimensions);
@@ -140,4 +142,23 @@ public:
         if(this->rank() != rank)
             throw std::runtime_error("bad rank");
     }
+
+    std::shared_ptr<Tensor> operator[](INDEX_NBR index) {
+        auto tensor{std::make_shared<Tensor>()};
+        tensor->_dimensions.resize(_dimensions.size() - 1);
+        for(INDEX_NBR i{1}; i < _dimensions.size(); ++i)
+            tensor->_dimensions.at(i - 1) = _dimensions.at(i);
+
+        Vector<INDEX_NBR> firstPosIndices(_dimensions.size(), 0);
+        Vector<INDEX_NBR> lastPosIndices(_dimensions.size(), 0);
+
+        firstPosIndices.at(0) = index;
+        lastPosIndices.at(0) = index + 1;
+
+        auto firstPos{_transform_indices(firstPosIndices)};
+        auto lastPos{_transform_indices(lastPosIndices) - 1};
+
+        tensor->_data = Vector(_data, std::make_pair(firstPos, lastPos));
+        return tensor;
+    };
 };

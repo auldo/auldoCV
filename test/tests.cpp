@@ -30,6 +30,30 @@ TEST_CASE("compute node test 1") {
     }
 }
 
+TEST_CASE("subvector") {
+    auto v{Vector<int>({1, 2, 3, 4, 5, 6})};
+    Vector<int> subVector{v, std::make_pair(2, 3)};
+    CHECK_EQ(subVector.at(0), 3);
+    CHECK_EQ(subVector.at(1), 4);
+    CHECK_THROWS(subVector.at(2));
+
+    subVector.at(0) = 10;
+    CHECK_EQ(v.at(2), 10);
+
+    v.at(3) = 11;
+    CHECK_EQ(subVector.at(1), 11);
+}
+
+TEST_CASE("subtensor") {
+    auto t{Tensor<int>(Vector<INDEX_NBR>({3, 3, 3}))};
+    auto subTensor{t.operator[](0)};
+
+    subTensor->at({0, 0}) = 10;
+    CHECK_EQ(t.at({0, 0, 0}), 10);
+    CHECK_THROWS(subTensor->at({0, 10}));
+    CHECK_THROWS(subTensor->at({0}));
+}
+
 TEST_CASE("read cifar batch") {
-    readCifar10Batch("/Users/dominikaulinger/Desktop/cifar10", CIFAR_10_BATCH_2);
+    //readCifar10Batch("/Users/dominikaulinger/Desktop/cifar10", CIFAR_10_BATCH_2);
 }

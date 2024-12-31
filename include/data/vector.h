@@ -12,22 +12,35 @@ class Vector {
     /// The vector's current size (i.e. the number of elements stored in that vector)
     INDEX_NBR _size;
 
+    INDEX_NBR _offset{0};
+
     /// The actual elements stored in that vector
-    std::unique_ptr<VECTOR_TYPE[]> _data{std::make_unique<VECTOR_TYPE[]>(0)};
+    std::shared_ptr<VECTOR_TYPE[]> _data{std::make_shared<VECTOR_TYPE[]>(0)};
 public:
+
+    /// Creates a sub-vector controlling the space within a given frame
+    Vector(Vector& other, std::pair<INDEX_NBR, INDEX_NBR> bounds) {
+        _size = bounds.second - bounds.first + 1;
+        _data = other._data;
+        _offset = bounds.first;
+    }
 
     /// Creates an empty vector.
     Vector() : _size(0) {}
 
     /// Creates a vector containing the elements in the initializer list.
-    Vector(std::initializer_list<VECTOR_TYPE> init) : _size(init.size()), _data(std::make_unique<VECTOR_TYPE[]>(init.size())) {
+    Vector(std::initializer_list<VECTOR_TYPE> init) : _size(init.size()), _data(std::make_shared<VECTOR_TYPE[]>(init.size())) {
         for(INDEX_NBR i{0}; i < init.size(); ++i)
             _data[i] = *(init.begin() + i);
     }
 
     /// Creates a vector of a certain size, without initializing values.
     /// Note, that anything could be stored in those indices.
-    explicit Vector(const INDEX_NBR size) : _size(size), _data(std::make_unique<VECTOR_TYPE[]>(size)) {}
+    explicit Vector(const INDEX_NBR size) : _size(size), _data(std::make_shared<VECTOR_TYPE[]>(size)) {}
+
+    Vector(const INDEX_NBR size, VECTOR_TYPE fillValue): Vector(size) {
+        fill(fillValue);
+    }
 
     /// Moves the vector to the assigned variable, leaving the moved vector empty.
     Vector &operator=(Vector &&other)  noexcept {
@@ -40,36 +53,43 @@ public:
     /**
     * Vectors need to be moved when being returned from functions.
     */
-    Vector(Vector &&other) noexcept: _size(other._size), _data(std::move(other._data)) {}
+    Vector(Vector &&other) noexcept: _size(other._size), _data(std::move(other._data)) {
+        if(other._offset != 0)
+            throw std::runtime_error("only works on original vectors");
+    }
 
     // Removed copy constructor and assignment operator.
     Vector(const Vector &other) = delete;
     Vector &operator=(const Vector &other) = delete;
 
     // Iterators
-    USE_RETURN array_iterator begin() { return _data.get(); }
-    USE_RETURN array_iterator end() { return _data.get() + _size; }
+    USE_RETURN array_iterator begin() { return _data.get() + _offset; }
+    USE_RETURN array_iterator end() { return _data.get() + _offset + _size; }
 
     // Const iterators
-    USE_RETURN const_array_iterator begin() const { return _data.get(); }
-    USE_RETURN const_array_iterator end() const { return _data.get() + _size; }
+    USE_RETURN const_array_iterator begin() const { return _data.get() + _offset; }
+    USE_RETURN const_array_iterator end() const { return _data.get() + _offset + _size; }
 
     /// Sets size to a certain size.
     /// Doesn't care about what's in the vector, so data may be "lost".
-    void resize(size_t size) {
+    void resize(INDEX_NBR size) {
+        if(_offset != 0)
+            throw std::runtime_error("only works on original vectors");
         this->_size = size;
-        this->_data = std::make_unique<VECTOR_TYPE[]>(size);
+        this->_data = std::make_shared<VECTOR_TYPE[]>(size);
     }
 
     /// Accesses element at certain index, may throw out of range.
-    VECTOR_TYPE& at(size_t idx) {
+    VECTOR_TYPE& at(INDEX_NBR idx) {
         if(idx >= this->_size)
             throw std::out_of_range("index out of range");
+        idx = idx + _offset;
         return this->_data[idx];
     }
 
     /// Const-access to element at certain index, may throw out of range.
-    const VECTOR_TYPE& at(size_t idx) const {
+    const VECTOR_TYPE& at(INDEX_NBR idx) const {
+        idx = idx + _offset;
         if(idx >= this->_size)
             throw std::out_of_range("index out of range");
         return this->_data[idx];
@@ -87,7 +107,7 @@ public:
 
     /// Works similar as multiplied_sum but only takes the last n indices into account.
     /// Required for tensor index transformation.
-    USE_RETURN VECTOR_TYPE multiplied_sum_last_n(const size_t n) const {
+    USE_RETURN VECTOR_TYPE multiplied_sum_last_n(const INDEX_NBR n) const {
         VECTOR_TYPE sum{this->_size == 0 ? static_cast<VECTOR_TYPE>(0) : static_cast<VECTOR_TYPE>(1)};
         for(auto i{0}; i < n; ++i) {
             sum *= this->at(this->_size - 1 - i);
@@ -97,4 +117,9 @@ public:
 
     /// Returns the size of the array.
     USE_RETURN INDEX_NBR size() const { return _size; }
+
+    void fill(const VECTOR_TYPE value) {
+        for(auto& elem : *this)
+            elem = value;
+    }
 };
