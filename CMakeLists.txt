@@ -13,7 +13,10 @@ add_library(auldoCV
         src/vision/base_kernel.cpp
         src/vision/simple_kernel.cpp
         src/neuron/fc_neuron.cpp
-        src/neuron/activation.cpp)
+        src/neuron/activation.cpp
+        src/layer/layer.cpp
+        src/layer/fc_layer.cpp
+        src/loss/mse_loss.cpp)
 target_include_directories(auldoCV PUBLIC include)
 target_link_libraries(auldoCV ${OpenCV_LIBS})
 

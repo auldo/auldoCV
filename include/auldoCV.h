@@ -25,6 +25,9 @@
 #include "layer/fc_layer.h"
 #include "layer/layer.h"
 
+#include "loss/loss.h"
+#include "loss/mse_loss.h"
+
 #include "neuron/fc_neuron.h"
 #include "neuron/neuron.h"
 #include "neuron/activation.h"

@@ -108,3 +108,20 @@ TEST_CASE("fcneuron") {
     neuron2->_bias->setScalarValue(3);
     CHECK_EQ(neuron2->_output_node->forwardPass(), sigmoid(3));
 }
+
+TEST_CASE("fc layer") {
+    auto input0{Vector({COMPUTE_NODE(0)})};
+    auto input1{Vector({COMPUTE_NODE(1)})};
+    auto input2{Vector({COMPUTE_NODE(2)})};
+    auto input3{Vector({COMPUTE_NODE(3)})};
+    auto output{Vector<PRECISE_NBR>({1, 2, 3, 4})};
+
+    auto layer{std::make_shared<FCLayer>(4, SIGMOID, input0)};
+    CHECK_EQ(layer->_neurons.size(), 4);
+
+    auto layer2{std::make_shared<FCLayer>(1, SIGMOID, layer)};
+    CHECK_EQ(layer2->_neurons.size(), 1);
+
+    auto loss{MSELoss(output.at(0), layer2)};
+    CHECK_NE(nullptr, loss._output_node);
+}
