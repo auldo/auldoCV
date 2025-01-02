@@ -2,6 +2,8 @@
 #include "doctest.h"
 #include "auldoCV.h"
 
+#define RUN_FAST_TESTS_ONLY true
+
 TEST_CASE("basic compute node scalar tests") {
     auto node{COMPUTE_NODE(4)};
     CHECK_EQ(node->getScalarValue(), 4);
@@ -44,22 +46,28 @@ TEST_CASE("subtensor") {
 }
 
 TEST_CASE("read image test") {
-    auto img{readImage("/Users/dominikaulinger/Desktop/test.jpg")};
-    writeImage("/Users/dominikaulinger/Desktop/test.png", img);
+    if(!RUN_FAST_TESTS_ONLY) {
+        auto img{readImage("/Users/dominikaulinger/Desktop/test.jpg")};
+        writeImage("/Users/dominikaulinger/Desktop/test.png", img);
+    }
 }
 
 TEST_CASE("base kernel test") {
-    BaseKernel k{1, 3, 10};
-    auto img{readImage("/Users/dominikaulinger/Desktop/test.jpg")};
-    auto padding{convertPixelsToByte(k.applyPadding(img))};
-    writeImage("/Users/dominikaulinger/Desktop/padding.png", padding);
+    if(!RUN_FAST_TESTS_ONLY) {
+        BaseKernel k{1, 3, 10};
+        auto img{readImage("/Users/dominikaulinger/Desktop/test.jpg")};
+        auto padding{convertPixelsToByte(k.applyPadding(img))};
+        writeImage("/Users/dominikaulinger/Desktop/padding.png", padding);
+    }
 }
 
 TEST_CASE("simple gaussian blur kernel test") {
-    auto img{readImage("/Users/dominikaulinger/Desktop/test.jpg")};
-    auto converted{convertPixelsToPrecise(img)};
-    auto pixels{convertPixelsToByte(converted)};
-    writeImage("/Users/dominikaulinger/Desktop/converted.png", pixels);
+    if(!RUN_FAST_TESTS_ONLY) {
+        auto img{readImage("/Users/dominikaulinger/Desktop/test.jpg")};
+        auto converted{convertPixelsToPrecise(img)};
+        auto pixels{convertPixelsToByte(converted)};
+        writeImage("/Users/dominikaulinger/Desktop/converted.png", pixels);
+    }
 }
 
 TEST_CASE("test kernel") {
@@ -76,8 +84,23 @@ TEST_CASE("test kernel") {
 }
 
 TEST_CASE("simple gaussian blur kernel test") {
-    auto img{readImage<PRECISE_NBR>("/Users/dominikaulinger/Desktop/test.jpg")};
-    auto kernel{SimpleKernel::gaussianBlur()};
-    auto result{kernel->apply(img)};
-    writeImage("/Users/dominikaulinger/Desktop/gaussian.png", result);
+    if(!RUN_FAST_TESTS_ONLY) {
+        auto img{readImage<PRECISE_NBR>("/Users/dominikaulinger/Desktop/test.jpg")};
+        auto kernel{SimpleKernel::gaussianBlur()};
+        auto result{kernel->apply(img)};
+        writeImage("/Users/dominikaulinger/Desktop/gaussian.png", result);
+    }
+}
+
+TEST_CASE("fcneuron") {
+    Vector<PRECISE_NBR> inputs{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    Vector<std::shared_ptr<ComputeNode>> nodes(inputs.size());
+    for(INDEX_NBR i{0}; i < nodes.size(); ++i)
+        nodes.at(i) = COMPUTE_NODE(inputs.at(i));
+    CHECK_EQ(nodes.at(5)->getScalarValue(), 6);
+    auto neuron{std::make_shared<FCNeuron>(nodes)};
+    CHECK_NE(nullptr, neuron->_output_node);
+    CHECK_EQ(neuron->_output_node->forwardPass(), 0);
+    neuron->_bias->setScalarValue(3);
+    CHECK_EQ(neuron->_output_node->forwardPass(), 3);
 }

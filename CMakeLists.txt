@@ -11,7 +11,8 @@ add_library(auldoCV
         src/gradient/compute_node_functions.cpp
         src/dataset/read_cifar_10.cpp
         src/vision/base_kernel.cpp
-        src/vision/simple_kernel.cpp)
+        src/vision/simple_kernel.cpp
+        src/neuron/fc_neuron.cpp)
 target_include_directories(auldoCV PUBLIC include)
 target_link_libraries(auldoCV ${OpenCV_LIBS})
 
