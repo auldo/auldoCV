@@ -21,7 +21,7 @@
 
 #define COMPUTE_NODE(x) CREATE_PTR<ComputeNode>(x)
 #define COMPUTE_NODE_PLUS(x, y) CREATE_PTR<ComputeNode>(OP_PLUS, Vector({x, y}))
-#define COMPUTE_NODE_PLUS_CONST(x, y) CREATE_PTR<ComputeNode>(OP_PLUS, Vector({x}), Vector<PRECISE_NBR>({y}))
+#define COMPUTE_NODE_PLUS_CONST(x, y) CREATE_PTR<ComputeNode>(OP_PLUS_CONST, Vector({x}), Vector<PRECISE_NBR>({y}))
 #define COMPUTE_NODE_TIMES(x, y) CREATE_PTR<ComputeNode>(OP_TIMES, Vector({x, y}))
 #define COMPUTE_NODE_TIMES_CONST(x, y) CREATE_PTR<ComputeNode>(OP_TIMES_CONST, Vector({x}), Vector<PRECISE_NBR>({y}))
 #define COMPUTE_NODE_DIV(x, y) CREATE_PTR<ComputeNode>(OP_DIV, Vector({x, y}))

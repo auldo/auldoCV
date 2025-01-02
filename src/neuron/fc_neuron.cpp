@@ -19,4 +19,9 @@ FCNeuron::FCNeuron(ActivationFunction activation, const Vector<std::shared_ptr<C
     _output_node = applyActivationFunction(activation, biasAdded);
 }
 
+std::string FCNeuron::getType() {
+    return "fc_neuron";
+}
+
+
 FCNeuron::FCNeuron(ActivationFunction activation, const std::shared_ptr<Layer>& layer): FCNeuron(activation, layer->getComputeNodes()) {}

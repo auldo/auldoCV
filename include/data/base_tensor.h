@@ -50,7 +50,10 @@ public:
     USE_RETURN INDEX_NBR rank() const override {
         if(this->_dimensions.size() == 1 && _data.size() == 1)
             return 0;
-        return this->_dimensions.size();
+        INDEX_NBR length1Dimensions{0};
+        for(const auto& elem : this->_dimensions)
+            length1Dimensions += elem == 1 ? elem : 0;
+        return this->_dimensions.size() - length1Dimensions;
     }
 
     /// Interprets tensor as scalar.

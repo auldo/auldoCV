@@ -28,18 +28,10 @@ public:
         return _parent->at(accessIndices);
     }
 
-    /// Terminology
-    /// A scalar is represented as [value] and has rank 0.
-    /// An array is of rank 1.
-    /// A matrix (e.g., 4x3 is rank 2).
     USE_RETURN INDEX_NBR rank() const override {
-        if(this->_dimensions.size() == 1 /*_parent->_data.size() == 1*/)
-            return 0;
-        return this->_dimensions.size();
+        return _parent->rank() - 1;
     }
 
-    /// Interprets tensor as scalar.
-    /// Fails if tensor isn't a scalar (hasn't rank 0 conditions fulfilled).
     USE_RETURN TENSOR_TYPE& scalar() override {
         if(rank() != 0)
             throw std::invalid_argument("rank must be 0");

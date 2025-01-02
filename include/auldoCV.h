@@ -21,9 +21,6 @@
 
 #include "initialization/xavier.h"
 
-#include "vision/base_kernel.h"
-#include "vision/simple_kernel.h"
-
 #include "layer/fc_layer.h"
 #include "layer/layer.h"
 
@@ -33,5 +30,11 @@
 #include "neuron/fc_neuron.h"
 #include "neuron/neuron.h"
 #include "neuron/activation.h"
+
+#include "optimizer/optimizer.h"
+#include "optimizer/sgd_optimizer.h"
+
+#include "vision/base_kernel.h"
+#include "vision/simple_kernel.h"
 
 #include "constants.h"

@@ -15,4 +15,5 @@ public:
     std::shared_ptr<ComputeNode> _bias;
     explicit FCNeuron(ActivationFunction activation, const Vector<std::shared_ptr<ComputeNode>>& inputs);
     explicit FCNeuron(ActivationFunction activation, const std::shared_ptr<Layer>& layer);
+    std::string getType() override;
 };
