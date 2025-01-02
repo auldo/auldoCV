@@ -9,7 +9,8 @@ set(CMAKE_CXX_STANDARD 20)
 add_library(auldoCV
         src/gradient/compute_node.cpp
         src/gradient/compute_node_functions.cpp
-        src/dataset/read_cifar_10.cpp)
+        src/dataset/read_cifar_10.cpp
+        src/img/write_image.cpp)
 target_include_directories(auldoCV PUBLIC include)
 target_link_libraries(auldoCV ${OpenCV_LIBS})
 

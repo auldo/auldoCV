@@ -46,9 +46,18 @@ public:
     */
     Vector(Vector &&other) noexcept: _size(other._size), _data(std::move(other._data)) {}
 
-    // Removed copy constructor and assignment operator.
-    Vector(const Vector &other) = delete;
-    Vector &operator=(const Vector &other) = delete;
+    Vector(const Vector &other): _size(other._size), _data(std::make_unique<VECTOR_TYPE[]>(other._size)) {
+        for(auto i{0}; i < other._size; ++i)
+            at(i) = other.at(i);
+    }
+
+    Vector &operator=(const Vector &other) {
+        _size = other._size;
+        _data = std::make_unique<VECTOR_TYPE[]>(other._size);
+        for(auto i{0}; i < other._size; ++i)
+            at(i) = other.at(i);
+        return *this;
+    };
 
     // Iterators
     USE_RETURN array_iterator begin() { return _data.get(); }

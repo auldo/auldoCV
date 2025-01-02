@@ -2,10 +2,11 @@
 
 #include <fstream>
 #include <iostream>
+#include <data/base_tensor.h>
 
-std::pair<TENSOR_REF(PIXEL), VECTOR_REF(PIXEL)> readCifar10Batch(const std::string& path, const std::string& batchName) {
+std::pair<BASE_TENSOR_REF(PIXEL), VECTOR_REF(PIXEL)> readCifar10Batch(const std::string& path, const std::string& batchName) {
     std::ifstream source(path + "/" + batchName, std::ios_base::binary);
-    const auto tensor{std::make_shared<Tensor<PIXEL>>(Vector<INDEX_NBR>({10000, 32, 32, 3}))};
+    const std::shared_ptr tensor{std::make_shared<BaseTensor<PIXEL>>(Vector<INDEX_NBR>({10000, 32, 32, 3}))};
     const auto vector{std::make_shared<Vector<PIXEL>>(10000)};
     for(INDEX_NBR i{0}; i < 10000; ++i) {
         const PIXEL label = source.get();
