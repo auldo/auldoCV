@@ -20,5 +20,6 @@
 #include "img/convert_pixels_precise.h"
 
 #include "vision/base_kernel.h"
+#include "vision/simple_kernel.h"
 
 #include "constants.h"

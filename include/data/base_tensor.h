@@ -20,6 +20,11 @@ public:
         _data.resize(this->_dimensions.multiplied_sum());
     }
 
+    BaseTensor(const Vector<INDEX_NBR>& dimensions, const Vector<TENSOR_TYPE>& data) {
+        this->_dimensions = dimensions;
+        this->_data = data;
+    }
+
     /// Creates a scalar tensor i.e., a tensor having rank 0 and one dimension of length 1 with one element.
     explicit BaseTensor(const TENSOR_TYPE& scalar): _data({scalar}) {
         this->_dimensions = Vector<INDEX_NBR>({1});

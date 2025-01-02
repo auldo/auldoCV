@@ -54,3 +54,30 @@ TEST_CASE("base kernel test") {
     auto padding{convertPixelsToByte(k.applyPadding(img))};
     writeImage("/Users/dominikaulinger/Desktop/padding.png", padding);
 }
+
+TEST_CASE("simple gaussian blur kernel test") {
+    auto img{readImage("/Users/dominikaulinger/Desktop/test.jpg")};
+    auto converted{convertPixelsToPrecise(img)};
+    auto pixels{convertPixelsToByte(converted)};
+    writeImage("/Users/dominikaulinger/Desktop/converted.png", pixels);
+}
+
+TEST_CASE("test kernel") {
+    auto kernel{SimpleKernel::gaussianBlur()};
+    CHECK_EQ(kernel->_filter->at({0, 0}), 1./16);
+    CHECK_EQ(kernel->_filter->at({0, 1}), 2./16);
+    CHECK_EQ(kernel->_filter->at({0, 2}), 1./16);
+    CHECK_EQ(kernel->_filter->at({1, 0}), 2./16);
+    CHECK_EQ(kernel->_filter->at({1, 1}), 4./16);
+    CHECK_EQ(kernel->_filter->at({1, 2}), 2./16);
+    CHECK_EQ(kernel->_filter->at({2, 0}), 1./16);
+    CHECK_EQ(kernel->_filter->at({2, 1}), 2./16);
+    CHECK_EQ(kernel->_filter->at({2, 2}), 1./16);
+}
+
+TEST_CASE("simple gaussian blur kernel test") {
+    auto img{readImage<PRECISE_NBR>("/Users/dominikaulinger/Desktop/test.jpg")};
+    auto kernel{SimpleKernel::gaussianBlur()};
+    auto result{kernel->apply(img)};
+    writeImage("/Users/dominikaulinger/Desktop/gaussian.png", result);
+}

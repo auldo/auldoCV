@@ -7,6 +7,7 @@
 #include "data/tensor.h"
 
 class BaseKernel {
+protected:
     PIXEL _stride;
     std::optional<PIXEL> _padding;
     PIXEL _size;
@@ -15,10 +16,14 @@ public:
 
     template <typename T> requires arithmetic<T>
     std::shared_ptr<Tensor<PRECISE_NBR>> applyPadding(std::shared_ptr<Tensor<T>>);
+
+    INDEX_NBR calculateOutputDimension(INDEX_NBR input) const;
+
+    virtual std::shared_ptr<Tensor<PRECISE_NBR>> apply(TENSOR_REF(PRECISE_NBR)&);
 };
 
 template<typename T> requires arithmetic<T>
-std::shared_ptr<Tensor<PRECISE_NBR> > BaseKernel::applyPadding(std::shared_ptr<Tensor<T>> input) {
+std::shared_ptr<Tensor<PRECISE_NBR>> BaseKernel::applyPadding(std::shared_ptr<Tensor<T>> input) {
     if(!_padding.has_value())
         return convertPixelsToPrecise(input);
     PIXEL padding{_padding.value()};
