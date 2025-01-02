@@ -1,10 +1,11 @@
-#include "gradient/compute_node.h"
 #include "neuron/fc_neuron.h"
 
 FCNeuron::FCNeuron(ActivationFunction activation, INDEX_NBR size): Neuron(activation), _weights(size) {
     for(INDEX_NBR i{0}; i < size; ++i)
         _weights.at(i) = COMPUTE_NODE(0);
+    xavier(_weights, size);
     _bias = COMPUTE_NODE(0);
+    xavier(_bias, size);
 }
 
 FCNeuron::FCNeuron(ActivationFunction activation, const Vector<std::shared_ptr<ComputeNode>>& inputs): FCNeuron(activation, inputs.size()) {

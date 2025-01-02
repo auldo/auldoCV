@@ -1,9 +1,10 @@
 #pragma once
 
-#include <layer/layer.h>
-
+#include "layer/layer.h"
+#include "gradient/compute_node.h"
 #include "data/vector.h"
 #include "neuron.h"
+#include "initialization/xavier.h"
 
 class ComputeNode;
 

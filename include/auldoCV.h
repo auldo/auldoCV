@@ -19,6 +19,8 @@
 #include "img/convert_pixels_byte.h"
 #include "img/convert_pixels_precise.h"
 
+#include "initialization/xavier.h"
+
 #include "vision/base_kernel.h"
 #include "vision/simple_kernel.h"
 

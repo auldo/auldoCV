@@ -16,7 +16,8 @@ add_library(auldoCV
         src/neuron/activation.cpp
         src/layer/layer.cpp
         src/layer/fc_layer.cpp
-        src/loss/mse_loss.cpp)
+        src/loss/mse_loss.cpp
+        src/initialization/xavier.cpp)
 target_include_directories(auldoCV PUBLIC include)
 target_link_libraries(auldoCV ${OpenCV_LIBS})
 

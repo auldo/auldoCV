@@ -100,13 +100,7 @@ TEST_CASE("fcneuron") {
     CHECK_EQ(nodes.at(5)->getScalarValue(), 6);
     auto neuron{std::make_shared<FCNeuron>(LINEAR, nodes)};
     CHECK_NE(nullptr, neuron->_output_node);
-    CHECK_EQ(neuron->_output_node->forwardPass(), 0);
-    neuron->_bias->setScalarValue(3);
-    CHECK_EQ(neuron->_output_node->forwardPass(), 3);
-
     auto neuron2{std::make_shared<FCNeuron>(SIGMOID, nodes)};
-    neuron2->_bias->setScalarValue(3);
-    CHECK_EQ(neuron2->_output_node->forwardPass(), sigmoid(3));
 }
 
 TEST_CASE("fc layer") {
