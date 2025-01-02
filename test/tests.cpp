@@ -43,6 +43,14 @@ TEST_CASE("subtensor") {
     CHECK_EQ(subTensor2->at({0}), 10);
 }
 
-TEST_CASE("read cifar batch") {
-    //readCifar10Batch("/Users/dominikaulinger/Desktop/cifar10", CIFAR_10_BATCH_2);
+TEST_CASE("read image test") {
+    auto img{readImage("/Users/dominikaulinger/Desktop/test.jpg")};
+    writeImage("/Users/dominikaulinger/Desktop/test.png", img);
+}
+
+TEST_CASE("base kernel test") {
+    BaseKernel k{1, 3, 10};
+    auto img{readImage("/Users/dominikaulinger/Desktop/test.jpg")};
+    auto padding{convertPixelsToByte(k.applyPadding(img))};
+    writeImage("/Users/dominikaulinger/Desktop/padding.png", padding);
 }
