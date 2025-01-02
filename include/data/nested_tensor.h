@@ -59,7 +59,7 @@ public:
             throw std::runtime_error("bad rank");
     }
 
-    std::shared_ptr<NestedTensor> operator[](INDEX_NBR index) {
+    std::shared_ptr<NestedTensor> operator[](INDEX_NBR index) override {
         Vector<INDEX_NBR> updatedDimensions(this->_dimensions.size() - 1);
         for(auto i{0}; i < updatedDimensions.size(); ++i)
             updatedDimensions.at(i) = this->_dimensions.at(i);

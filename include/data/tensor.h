@@ -2,11 +2,12 @@
 #include <iostream>
 #include <ostream>
 #include <stdexcept>
-#include <string>
 
 #include "data/linearized.h"
 #include "data/vector.h"
-//#include "data/nested_tensor.h"
+
+template <typename TENSOR_TYPE>
+class NestedTensor;
 
 template <typename TENSOR_TYPE>
 class Tensor : public Linearized {
@@ -32,5 +33,5 @@ public:
     /// Only works if new size can be transferred into the same size of linearized array.
     virtual void resize(const Vector<INDEX_NBR>& dimensions) = 0;
 
-    //virtual std::shared_ptr<NestedTensor<TENSOR_TYPE>> operator[](INDEX_NBR index) = 0;
+    virtual std::shared_ptr<NestedTensor<TENSOR_TYPE>> operator[](INDEX_NBR index) = 0;
 };

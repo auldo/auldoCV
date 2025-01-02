@@ -15,7 +15,6 @@
 #define TO_PIXEL(x) static_cast<PIXEL>(x)
 
 #define TENSOR_REF(x) std::shared_ptr<Tensor<x>>
-#define BASE_TENSOR_REF(x) std::shared_ptr<BaseTensor<x>>
 #define VECTOR_REF(x) std::shared_ptr<Vector<x>>
 
 #define USE_RETURN [[nodiscard]]

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <data/base_tensor.h>
 
-std::pair<BASE_TENSOR_REF(PIXEL), VECTOR_REF(PIXEL)> readCifar10Batch(const std::string& path, const std::string& batchName) {
+std::pair<TENSOR_REF(PIXEL), VECTOR_REF(PIXEL)> readCifar10Batch(const std::string& path, const std::string& batchName) {
     std::ifstream source(path + "/" + batchName, std::ios_base::binary);
     const std::shared_ptr tensor{std::make_shared<BaseTensor<PIXEL>>(Vector<INDEX_NBR>({10000, 32, 32, 3}))};
     const auto vector{std::make_shared<Vector<PIXEL>>(10000)};

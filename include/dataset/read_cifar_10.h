@@ -10,4 +10,4 @@
 #define CIFAR_10_BATCH_TEST "test_batch.bin"
 
 /// Reads cifar 10 batches that can be downloaded here: https://www.cs.toronto.edu/~kriz/cifar.html.
-std::pair<BASE_TENSOR_REF(PIXEL), VECTOR_REF(PIXEL)> readCifar10Batch(const std::string& path, const std::string& batchName);
+std::pair<TENSOR_REF(PIXEL), VECTOR_REF(PIXEL)> readCifar10Batch(const std::string& path, const std::string& batchName);
