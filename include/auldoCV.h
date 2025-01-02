@@ -27,5 +27,6 @@
 
 #include "neuron/fc_neuron.h"
 #include "neuron/neuron.h"
+#include "neuron/activation.h"
 
 #include "constants.h"
