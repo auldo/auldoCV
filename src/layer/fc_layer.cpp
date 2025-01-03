@@ -3,14 +3,14 @@
 #include "layer/fc_layer.h"
 #include "neuron/fc_neuron.h"
 
-FCLayer::FCLayer(INDEX_NBR size, ActivationFunction activation, INDEX_NBR inputSize): Layer(size), _inputs(inputSize), _inputSize(inputSize) {
+FCLayer::FCLayer(INDEX_NBR size, ActivationFunction activation, INDEX_NBR inputSize): _neurons(size), _inputs(inputSize), _inputSize(inputSize) {
     for(auto i{0}; i < inputSize; ++i)
         _inputs->at(i) = COMPUTE_NODE(0);
     for(INDEX_NBR i = 0; i < size; ++i)
         _neurons.at(i) = std::make_shared<FCNeuron>(activation, _inputs.value());
 }
 
-FCLayer::FCLayer(INDEX_NBR size, ActivationFunction activation, const std::shared_ptr<Layer>& layer): Layer(size, layer) {
+FCLayer::FCLayer(INDEX_NBR size, ActivationFunction activation, const std::shared_ptr<Layer>& layer): Layer(layer), _neurons(size) {
     for(INDEX_NBR i = 0; i < size; ++i)
         _neurons.at(i) = std::make_shared<FCNeuron>(activation, layer);
 }

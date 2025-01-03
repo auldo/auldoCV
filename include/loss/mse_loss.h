@@ -1,7 +1,7 @@
 #pragma once
 
 #include "loss/loss.h"
-#include "layer/layer.h"
+#include "layer/fc_layer.h"
 
 class MSELoss : public Loss {
 public:

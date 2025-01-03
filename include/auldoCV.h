@@ -23,6 +23,7 @@
 
 #include "layer/fc_layer.h"
 #include "layer/layer.h"
+#include "layer/conv_layer.h"
 
 #include "loss/loss.h"
 #include "loss/mse_loss.h"
