@@ -3,7 +3,7 @@
 #include "layer/fc_layer.h"
 #include "neuron/fc_neuron.h"
 
-FCLayer::FCLayer(INDEX_NBR size, ActivationFunction activation, INDEX_NBR inputSize): Layer(size), _inputs(inputSize) {
+FCLayer::FCLayer(INDEX_NBR size, ActivationFunction activation, INDEX_NBR inputSize): Layer(size), _inputs(inputSize), _inputSize(inputSize) {
     for(auto i{0}; i < inputSize; ++i)
         _inputs->at(i) = COMPUTE_NODE(0);
     for(INDEX_NBR i = 0; i < size; ++i)
@@ -21,4 +21,3 @@ Vector<std::shared_ptr<ComputeNode>> FCLayer::getComputeNodes() const {
         result.at(i) = _neurons.at(i)->_output_node;
     return result;
 }
-

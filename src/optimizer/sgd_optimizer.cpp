@@ -2,6 +2,7 @@
 
 #include <data/nested_tensor.h>
 #include <layer/fc_layer.h>
+#include <loss/binary_cross_entropy_loss.h>
 #include <loss/mse_loss.h>
 #include <neuron/fc_neuron.h>
 
@@ -24,6 +25,8 @@ void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
     //Run epochs
     for(auto e{0}; e < _epochs; ++e) {
 
+        PRECISE_NBR epochLoss{0};
+
         //Run iteration with a specific in- and output.
         for(auto i{0}; i < _truth->shapeSize(0); ++i) {
 
@@ -42,8 +45,10 @@ void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
 
             //Set input into the very first layer compute input nodes.
             if(auto layer = std::dynamic_pointer_cast<FCLayer>(firstLayer)) {
-                for(auto in{0}; in < layer->_inputs.value().size(); ++in)
+                for(auto in{0}; in < layer->_inputs.value().size(); ++in) {
+                    //std::cout << "setting value to " << input.at(in) << std::endl;
                     layer->_inputs.value().at(in)->setScalarValue(input.at(in));
+                }
             }
 
             //Append loss to the compute graph.
@@ -52,10 +57,13 @@ void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
                 case MSE:
                     loss = MSELoss(iterationTruth->scalar(), _layer);
                     break;
+                case BINARY_CROSS_ENTROPY:
+                    loss = BinaryCrossEntropyLoss(iterationTruth->scalar(), _layer);
+                    break;
             }
 
             //Execute forward and backward passes of the compute graph to derive gradients.
-            loss._output_node->forwardPass();
+            epochLoss += loss._output_node->forwardPass();
             loss._output_node->backwardPass();
 
             //Run over all layers to update all weights and biases.
@@ -74,7 +82,8 @@ void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
             }
         }
 
-        std::cout << "Epoch done." << std::endl;
+        epochLoss /= _truth->shapeSize(0);
+        std::cout << "Epoch done, avg loss: " << epochLoss << std::endl;
     }
 }
 

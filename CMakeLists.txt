@@ -19,7 +19,8 @@ add_library(auldoCV
         src/loss/mse_loss.cpp
         src/initialization/xavier.cpp
         src/optimizer/sgd_optimizer.cpp
-        src/neuron/neuron.cpp)
+        src/neuron/neuron.cpp
+        src/loss/binary_cross_entropy_loss.cpp)
 target_include_directories(auldoCV PUBLIC include)
 target_link_libraries(auldoCV ${OpenCV_LIBS})
 
