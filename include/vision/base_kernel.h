@@ -12,12 +12,14 @@ protected:
     std::optional<PIXEL> _padding;
     PIXEL _size;
 public:
+    virtual ~BaseKernel() = default;
+
     BaseKernel(PIXEL stride, PIXEL size, std::optional<PIXEL> padding = std::nullopt);
 
     template <typename T> requires arithmetic<T>
     std::shared_ptr<Tensor<PRECISE_NBR>> applyPadding(std::shared_ptr<Tensor<T>>);
 
-    INDEX_NBR calculateOutputDimension(INDEX_NBR input) const;
+    USE_RETURN INDEX_NBR calculateOutputDimension(INDEX_NBR input) const;
 
     virtual std::shared_ptr<Tensor<PRECISE_NBR>> apply(TENSOR_REF(PRECISE_NBR)&);
 };

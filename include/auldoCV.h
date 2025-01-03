@@ -37,5 +37,6 @@
 
 #include "vision/base_kernel.h"
 #include "vision/simple_kernel.h"
+#include "vision/conv_kernel.h"
 
 #include "constants.h"
