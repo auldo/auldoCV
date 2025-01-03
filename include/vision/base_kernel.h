@@ -20,8 +20,6 @@ public:
     std::shared_ptr<Tensor<PRECISE_NBR>> applyPadding(std::shared_ptr<Tensor<T>>);
 
     USE_RETURN INDEX_NBR calculateOutputDimension(INDEX_NBR input) const;
-
-    virtual std::shared_ptr<Tensor<PRECISE_NBR>> apply(TENSOR_REF(PRECISE_NBR)&);
 };
 
 template<typename T> requires arithmetic<T>

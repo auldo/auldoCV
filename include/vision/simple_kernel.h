@@ -10,5 +10,5 @@ public:
     static std::shared_ptr<SimpleKernel> boxMean();
     static std::shared_ptr<SimpleKernel> edgeDetection();
     static std::shared_ptr<SimpleKernel> sharpen();
-    std::shared_ptr<Tensor<double>> apply(TENSOR_REF(PRECISE_NBR)&) override;
+    std::shared_ptr<Tensor<double>> apply(TENSOR_REF(PRECISE_NBR)&);
 };
