@@ -10,10 +10,6 @@
 /// Take next sample, ...
 class SgdOptimizer : public Optimizer  {
     INDEX_NBR _epochs;
-    LossFunction _lossFunction;
-    std::shared_ptr<Layer> _layer;
-    std::shared_ptr<Tensor<PRECISE_NBR>> _truth;
-    std::shared_ptr<Tensor<PRECISE_NBR>> _inputs;
 public:
     SgdOptimizer(const std::shared_ptr<Layer>& finalLayer, INDEX_NBR epochs, LossFunction loss, const std::shared_ptr<Tensor<PRECISE_NBR>>& truth, const std::shared_ptr<Tensor<PRECISE_NBR>>& inputs);
     void optimize(PRECISE_NBR learningRate) override;

@@ -36,6 +36,7 @@
 
 #include "optimizer/optimizer.h"
 #include "optimizer/sgd_optimizer.h"
+#include "optimizer/mini_batch_optimizer.h"
 
 #include "vision/base_kernel.h"
 #include "vision/simple_kernel.h"

@@ -30,8 +30,14 @@ int main() {
     auto layer3{std::make_shared<FCLayer>(4, SIGMOID, layer2)};
     auto layer4{std::make_shared<FCLayer>(1, SIGMOID, layer3)};
 
-    auto optimizer{std::make_shared<SgdOptimizer>(layer4, 10000, BINARY_CROSS_ENTROPY, outputs, inputs)};
-    optimizer->optimize(0.001);
+    bool sgd{false};
+    if(sgd) {
+        auto optimizer{std::make_shared<SgdOptimizer>(layer4, 10000, BINARY_CROSS_ENTROPY, outputs, inputs)};
+        optimizer->optimize(0.001);
+    } else {
+        auto optimizer{std::make_shared<MiniBatchOptimizer>(layer4, 100000, 3, BINARY_CROSS_ENTROPY, outputs, inputs)};
+        optimizer->optimize(0.01);
+    }
 
     for(INDEX_NBR i{0}; i < 10; ++i) {
         layer1->_inputs.value().at(0)->setScalarValue(inputs->at({i, 0}));

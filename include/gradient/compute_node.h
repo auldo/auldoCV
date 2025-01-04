@@ -35,6 +35,8 @@ class ComputeNode {
     /// Those are added up.
     std::optional<PRECISE_NBR> _gradient;
 
+    Vector<PRECISE_NBR> _gradientStorage;
+
 public:
 
     explicit ComputeNode(ComputeNodeType type);
@@ -89,4 +91,10 @@ public:
     void setScalarValue(PRECISE_NBR scalar);
 
     void clear();
+
+    void applyGradient(PRECISE_NBR factor);
+
+    void rescaleGradientStorage(INDEX_NBR size);
+    void setGradientStorage(INDEX_NBR index);
+    void applyAverageGradient(PRECISE_NBR factor);
 };

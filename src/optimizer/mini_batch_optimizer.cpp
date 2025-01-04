@@ -1,35 +1,40 @@
-#include "optimizer/sgd_optimizer.h"
+#include "optimizer/mini_batch_optimizer.h"
 
-#include <data/nested_tensor.h>
-#include <layer/conv_layer.h>
-#include <layer/fc_layer.h>
-#include <loss/binary_cross_entropy_loss.h>
-#include <loss/cross_entropy_loss.h>
-#include <loss/mse_loss.h>
-#include <neuron/fc_neuron.h>
+MiniBatchOptimizer::MiniBatchOptimizer(const std::shared_ptr<Layer> &finalLayer, unsigned int iterations, unsigned int miniBatchSize, LossFunction loss, const std::shared_ptr<Tensor<double> > &truth, const std::shared_ptr<Tensor<double> > &inputs) : Optimizer(finalLayer, loss, truth, inputs), _iterations(iterations), _batchSize(miniBatchSize) {}
 
-SgdOptimizer::SgdOptimizer(const std::shared_ptr<Layer>& finalLayer, INDEX_NBR epochs, LossFunction loss, const std::shared_ptr<Tensor<PRECISE_NBR>>& truth, const std::shared_ptr<Tensor<PRECISE_NBR>>& inputs) : Optimizer(finalLayer, loss, truth, inputs), _epochs(epochs) {
-    if(truth->rank() != 2 && truth->rank() != 1)
-        throw std::runtime_error("truth must be of rank 1 or 2");
-    if(truth->shapeSize(0) != inputs->shapeSize(0))
-        throw std::runtime_error("truth and input must be of same size at dim 0");
+USE_RETURN Vector<INDEX_NBR> MiniBatchOptimizer::selectMiniBatch() const {
+    static std::random_device rdev;
+    static std::default_random_engine re(rdev());
+    typedef std::conditional_t<
+        std::is_floating_point_v<int>,
+        std::uniform_real_distribution<int>,
+        std::uniform_int_distribution<int>> dist_type;
+    dist_type uni(0, static_cast<int>(_inputs->shapeSize(0)) - 1);
+
+    Vector<INDEX_NBR> selection(_batchSize);
+    for(INDEX_NBR i{0}; i < _batchSize; ++i)
+        selection.at(i) = uni(re);
+    return selection;
 }
 
-void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
+void MiniBatchOptimizer::optimize(double learningRate) {
     auto firstLayer{_layer};
     while(firstLayer->_previous != nullptr)
         firstLayer = firstLayer->_previous;
-    learningRate = learningRate * _truth->shapeSize(0);
 
-    std::cout << "starting first epoch";
+    std::cout << "starting first iteration";
+
+    rescaleGradientStorages(_batchSize);
 
     //Run epochs
-    for(auto e{0}; e < _epochs; ++e) {
+    for(auto e{0}; e < _iterations; ++e) {
 
         PRECISE_NBR epochLoss{0};
+        auto miniBatchSelection{selectMiniBatch()};
 
         //Run iteration with a specific in- and output.
-        for(auto i{0}; i < _truth->shapeSize(0); ++i) {
+        for(auto s{0}; s < miniBatchSelection.size(); ++s) {
+            INDEX_NBR i{miniBatchSelection.at(s)};
 
             //Unpack truth for this iteration.
             auto iterationTruth{_truth->operator[](i)};
@@ -74,17 +79,17 @@ void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
             const PRECISE_NBR iterationLoss{loss._output_node->forwardPass()};
             epochLoss += iterationLoss;
             loss._output_node->backwardPass();
-
-            //Run over all layers to update all weights and biases.
-            updateWeights(learningRate);
+            setGradientStorage(s);
         }
+
+        //Run over all layers to update all weights and biases.
+        updateAverageWeights(learningRate);
 
         epochLoss /= _truth->shapeSize(0);
 
         std::cout<<"\r \r";
-        std::cout << "epoch done, avg loss: " << epochLoss;
+        std::cout << "mini batch iteration done, avg loss: " << epochLoss;
     }
 
     std::cout << std::endl;
 }
-

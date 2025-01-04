@@ -151,3 +151,24 @@ void ComputeNode::clear() {
     forwardPassCache.clear();
     _gradient = std::nullopt;
 }
+
+void ComputeNode::applyGradient(PRECISE_NBR factor) {
+    setScalarValue(getScalarValue() - factor * gradient());
+}
+
+void ComputeNode::rescaleGradientStorage(INDEX_NBR size) {
+    _gradientStorage = Vector<PRECISE_NBR>(size);
+}
+
+void ComputeNode::setGradientStorage(INDEX_NBR index) {
+    _gradientStorage.at(index) = gradient();
+}
+
+void ComputeNode::applyAverageGradient(double factor) {
+    PRECISE_NBR sum{0};
+    for(const auto& elem : _gradientStorage)
+        sum += elem;
+    PRECISE_NBR weightedSum{sum / _gradientStorage.size()};
+    setScalarValue(getScalarValue() - factor * weightedSum);
+}
+
