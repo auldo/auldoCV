@@ -18,7 +18,7 @@ void Optimizer::updateWeights(PRECISE_NBR learningRate) const {
             for(INDEX_NBR k{0}; k < convLayer->_kernels.size(); ++k) {
                 for(INDEX_NBR r{0}; r < convLayer->_kernels.at(k)->_weights->shapeSize(0); ++r) {
                     for(INDEX_NBR c{0}; c < convLayer->_kernels.at(k)->_weights->shapeSize(1); ++c) {
-                        for(INDEX_NBR ch{0}; r < convLayer->_kernels.at(k)->_weights->shapeSize(2); ++ch) {
+                        for(INDEX_NBR ch{0}; ch < convLayer->_kernels.at(k)->_weights->shapeSize(2); ++ch) {
                             convLayer->_kernels.at(k)->_weights->at({r, c, ch})->applyGradient(learningRate);
                         }
                     }
@@ -45,7 +45,7 @@ void Optimizer::updateAverageWeights(PRECISE_NBR learningRate) const {
             for(INDEX_NBR k{0}; k < convLayer->_kernels.size(); ++k) {
                 for(INDEX_NBR r{0}; r < convLayer->_kernels.at(k)->_weights->shapeSize(0); ++r) {
                     for(INDEX_NBR c{0}; c < convLayer->_kernels.at(k)->_weights->shapeSize(1); ++c) {
-                        for(INDEX_NBR ch{0}; r < convLayer->_kernels.at(k)->_weights->shapeSize(2); ++ch) {
+                        for(INDEX_NBR ch{0}; ch < convLayer->_kernels.at(k)->_weights->shapeSize(2); ++ch) {
                             convLayer->_kernels.at(k)->_weights->at({r, c, ch})->applyAverageGradient(learningRate);
                         }
                     }
@@ -70,7 +70,7 @@ void Optimizer::rescaleGradientStorages(INDEX_NBR size) const {
             for(INDEX_NBR k{0}; k < convLayer->_kernels.size(); ++k) {
                 for(INDEX_NBR r{0}; r < convLayer->_kernels.at(k)->_weights->shapeSize(0); ++r) {
                     for(INDEX_NBR c{0}; c < convLayer->_kernels.at(k)->_weights->shapeSize(1); ++c) {
-                        for(INDEX_NBR ch{0}; r < convLayer->_kernels.at(k)->_weights->shapeSize(2); ++ch) {
+                        for(INDEX_NBR ch{0}; ch < convLayer->_kernels.at(k)->_weights->shapeSize(2); ++ch) {
                             convLayer->_kernels.at(k)->_weights->at({r, c, ch})->rescaleGradientStorage(size);
                         }
                     }
@@ -96,7 +96,7 @@ void Optimizer::setGradientStorage(INDEX_NBR idx) const {
             for(INDEX_NBR k{0}; k < convLayer->_kernels.size(); ++k) {
                 for(INDEX_NBR r{0}; r < convLayer->_kernels.at(k)->_weights->shapeSize(0); ++r) {
                     for(INDEX_NBR c{0}; c < convLayer->_kernels.at(k)->_weights->shapeSize(1); ++c) {
-                        for(INDEX_NBR ch{0}; r < convLayer->_kernels.at(k)->_weights->shapeSize(2); ++ch) {
+                        for(INDEX_NBR ch{0}; ch < convLayer->_kernels.at(k)->_weights->shapeSize(2); ++ch) {
                             convLayer->_kernels.at(k)->_weights->at({r, c, ch})->setGradientStorage(idx);
                         }
                     }

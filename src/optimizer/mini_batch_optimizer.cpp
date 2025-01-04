@@ -22,8 +22,6 @@ void MiniBatchOptimizer::optimize(double learningRate) {
     while(firstLayer->_previous != nullptr)
         firstLayer = firstLayer->_previous;
 
-    std::cout << "starting first iteration";
-
     rescaleGradientStorages(_batchSize);
 
     //Run epochs
@@ -52,7 +50,6 @@ void MiniBatchOptimizer::optimize(double learningRate) {
                 }
 
                 for(auto in{0}; in < layer->_inputs.value().size(); ++in) {
-                    //std::cout << "setting value to " << input.at(in) << std::endl;
                     layer->_inputs.value().at(in)->setScalarValue(input.at(in));
                 }
             }
@@ -80,6 +77,8 @@ void MiniBatchOptimizer::optimize(double learningRate) {
             epochLoss += iterationLoss;
             loss._output_node->backwardPass();
             setGradientStorage(s);
+
+            std::cout << "single iteration done." << std::endl;;
         }
 
         //Run over all layers to update all weights and biases.
@@ -87,8 +86,7 @@ void MiniBatchOptimizer::optimize(double learningRate) {
 
         epochLoss /= _truth->shapeSize(0);
 
-        std::cout<<"\r \r";
-        std::cout << "mini batch iteration done, avg loss: " << epochLoss;
+        std::cout << "mini batch iteration done, avg loss: " << epochLoss << std::endl;
     }
 
     std::cout << std::endl;
