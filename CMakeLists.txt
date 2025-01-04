@@ -20,7 +20,8 @@ add_library(auldoCV
         src/neuron/neuron.cpp
         src/loss/binary_cross_entropy_loss.cpp
         src/vision/conv_kernel.cpp
-        src/layer/conv_layer.cpp)
+        src/layer/conv_layer.cpp
+        src/loss/cross_entropy_loss.cpp)
 find_package(OpenCV REQUIRED)
 target_include_directories(auldoCV PUBLIC ${OPENCV_INCLUDE_DIRS})
 target_include_directories(auldoCV PUBLIC include)

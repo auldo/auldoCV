@@ -19,8 +19,9 @@ void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
     auto firstLayer{_layer};
     while(firstLayer->_previous != nullptr)
         firstLayer = firstLayer->_previous;
-
     learningRate = learningRate * _truth->shapeSize(0);
+
+    std::cout << "starting first epoch";
 
     //Run epochs
     for(auto e{0}; e < _epochs; ++e) {
@@ -83,7 +84,11 @@ void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
         }
 
         epochLoss /= _truth->shapeSize(0);
-        std::cout << "Epoch done, avg loss: " << epochLoss << std::endl;
+
+        std::cout<<"\r \r";
+        std::cout << "epoch done, avg loss: " << epochLoss;
     }
+
+    std::cout << std::endl;
 }
 

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <ostream>
 #include <stdexcept>
+#include <gradient/compute_node.h>
 
 #include "data/linearized.h"
 #include "data/vector.h"

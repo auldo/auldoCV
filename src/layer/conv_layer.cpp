@@ -83,5 +83,15 @@ void ConvolutionalLayer::setInputs(const std::shared_ptr<Tensor<PIXEL>> &input) 
 
 
 Vector<std::shared_ptr<ComputeNode>> ConvolutionalLayer::getComputeNodes() const {
-    throw std::runtime_error("Not implemented");
+    Vector<std::shared_ptr<ComputeNode>> nodes(_output->shapeSize(0) * _output->shapeSize(1) * _output->shapeSize(2));
+    auto vectorIdx{0};
+    for(INDEX_NBR r{0}; r < _output->shapeSize(0); ++r) {
+        for(INDEX_NBR c{0}; c < _output->shapeSize(1); ++c) {
+            for(INDEX_NBR ch{0}; ch < _output->shapeSize(2); ++ch) {
+                nodes.at(vectorIdx) = _output->at({r, c, ch});
+                ++vectorIdx;
+            }
+        }
+    }
+    return nodes;
 }

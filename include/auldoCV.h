@@ -28,6 +28,7 @@
 #include "loss/loss.h"
 #include "loss/mse_loss.h"
 #include "loss/binary_cross_entropy_loss.h"
+#include "loss/cross_entropy_loss.h"
 
 #include "neuron/fc_neuron.h"
 #include "neuron/neuron.h"
