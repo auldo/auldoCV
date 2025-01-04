@@ -38,7 +38,7 @@ class ComputeNode {
     Vector<PRECISE_NBR> _gradientStorage;
 
 public:
-
+    ComputeNode();
     explicit ComputeNode(ComputeNodeType type);
 
     /// Creates a computational graph node of SCALAR type.
@@ -93,8 +93,10 @@ public:
     void clear();
 
     void applyGradient(PRECISE_NBR factor);
-
     void rescaleGradientStorage(INDEX_NBR size);
     void setGradientStorage(INDEX_NBR index);
     void applyAverageGradient(PRECISE_NBR factor);
+
+    /// if called from the final node of the graph, this clones the full compute graph.
+    std::shared_ptr<ComputeNode> clone();
 };

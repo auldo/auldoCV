@@ -172,3 +172,26 @@ void ComputeNode::applyAverageGradient(double factor) {
     setScalarValue(getScalarValue() - factor * weightedSum);
 }
 
+ComputeNode::ComputeNode() : _type(OP_PLUS), _gradient(std::nullopt), _scalar(std::nullopt) {}
+
+
+std::shared_ptr<ComputeNode> ComputeNode::clone() {
+    auto cloned{std::make_shared<ComputeNode>()};
+    cloned->_type = _type;
+
+    cloned->_constArgs = Vector<PRECISE_NBR>(_constArgs.size());
+    for(auto i{0}; i < _constArgs.size(); ++i)
+        cloned->_constArgs.at(i) = _constArgs.at(i);
+
+    if(_scalar.has_value())
+        cloned->_scalar = _scalar.value();
+
+    if(_gradient.has_value())
+        cloned->_gradient = _gradient.value();
+
+    cloned->_dynamicArgs = Vector<std::shared_ptr<ComputeNode>>(_dynamicArgs.size());
+    for(auto i{0}; i < _dynamicArgs.size(); ++i)
+        cloned->_dynamicArgs.at(i) = _dynamicArgs.at(i)->clone();
+
+    return cloned;
+}

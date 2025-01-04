@@ -1,5 +1,3 @@
-#pragma once
-
 #include "layer/fc_layer.h"
 #include "neuron/fc_neuron.h"
 
