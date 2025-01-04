@@ -10,5 +10,6 @@ public:
 
 enum LossFunction {
     MSE,
-    BINARY_CROSS_ENTROPY
+    BINARY_CROSS_ENTROPY,
+    CROSS_ENTROPY
 };

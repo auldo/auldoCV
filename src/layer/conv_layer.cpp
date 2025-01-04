@@ -66,7 +66,7 @@ ConvolutionalLayer::ConvolutionalLayer(PIXEL filterSize, PIXEL filterStride, IND
     buildOutputNode(newHeight, newWidth, filterStride, filterSize);
 }
 
-void ConvolutionalLayer::setInputs(const std::shared_ptr<Tensor<PIXEL>> &input) const {
+void ConvolutionalLayer::setInputs(const std::shared_ptr<Tensor<PRECISE_NBR>> &input) const {
     if(input->shapeSize(0) != _inputHeight)
         throw std::runtime_error("bad img height");
     if(input->shapeSize(1) != _inputWidth)
@@ -76,7 +76,7 @@ void ConvolutionalLayer::setInputs(const std::shared_ptr<Tensor<PIXEL>> &input) 
     for(INDEX_NBR r{0}; r < _inputHeight; ++r) {
         for(INDEX_NBR c{0}; c < _inputWidth; ++c) {
             for(INDEX_NBR ch{0}; ch < _inputDepth; ++ch)
-                _input->at({r, c, ch})->setScalarValue(TO_PRECISE_NBR(input->at({r, c, ch})));
+                _input->at({r, c, ch})->setScalarValue(input->at({r, c, ch}));
         }
     }
 }

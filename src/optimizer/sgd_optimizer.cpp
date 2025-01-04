@@ -1,15 +1,15 @@
 #include "optimizer/sgd_optimizer.h"
 
 #include <data/nested_tensor.h>
+#include <layer/conv_layer.h>
 #include <layer/fc_layer.h>
 #include <loss/binary_cross_entropy_loss.h>
+#include <loss/cross_entropy_loss.h>
 #include <loss/mse_loss.h>
 #include <neuron/fc_neuron.h>
 
 SgdOptimizer::SgdOptimizer(const std::shared_ptr<Layer>& finalLayer, INDEX_NBR epochs, LossFunction loss, const std::shared_ptr<Tensor<PRECISE_NBR>>& truth, const std::shared_ptr<Tensor<PRECISE_NBR>>& inputs) : _epochs(epochs), _lossFunction(loss), _truth(truth), _layer(finalLayer), _inputs(inputs) {
     if(truth->rank() != 2 && truth->rank() != 1)
-        throw std::runtime_error("truth must be of rank 1 or 2");
-    if(inputs->rank() != 2 && inputs->rank() != 1)
         throw std::runtime_error("truth must be of rank 1 or 2");
     if(truth->shapeSize(0) != inputs->shapeSize(0))
         throw std::runtime_error("truth and input must be of same size at dim 0");
@@ -34,22 +34,27 @@ void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
             //Unpack truth for this iteration.
             auto iterationTruth{_truth->operator[](i)};
 
-            //Unpack input for this iteration and store it in a vector.
-            auto iterationInput{_inputs->operator[](i)};
-            Vector<PRECISE_NBR> input(iterationInput->rank() == 0 ? 1 : iterationInput->shapeSize(0));
-            if(iterationInput->rank() == 0) {
-                input.at(0) = iterationInput->scalar();
-            } else {
-                for(INDEX_NBR in{0}; in < iterationInput->shapeSize(0); ++in)
-                    input.at(in) = iterationInput->at({in});
-            }
-
             //Set input into the very first layer compute input nodes.
             if(auto layer = std::dynamic_pointer_cast<FCLayer>(firstLayer)) {
+                //Unpack input for this iteration and store it in a vector.
+                auto iterationInput{_inputs->operator[](i)};
+                Vector<PRECISE_NBR> input(iterationInput->rank() == 0 ? 1 : iterationInput->shapeSize(0));
+                if(iterationInput->rank() == 0) {
+                    input.at(0) = iterationInput->scalar();
+                } else {
+                    for(INDEX_NBR in{0}; in < iterationInput->shapeSize(0); ++in)
+                        input.at(in) = iterationInput->at({in});
+                }
+
                 for(auto in{0}; in < layer->_inputs.value().size(); ++in) {
                     //std::cout << "setting value to " << input.at(in) << std::endl;
                     layer->_inputs.value().at(in)->setScalarValue(input.at(in));
                 }
+            }
+
+            if(auto layer = std::dynamic_pointer_cast<ConvolutionalLayer>(firstLayer)) {
+                auto iterationInput{_inputs->operator[](i)};
+                layer->setInputs(iterationInput);
             }
 
             //Append loss to the compute graph.
@@ -61,10 +66,13 @@ void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
                 case BINARY_CROSS_ENTROPY:
                     loss = BinaryCrossEntropyLoss(iterationTruth->scalar(), _layer);
                     break;
+                case CROSS_ENTROPY:
+                    loss = CrossEntropyLoss(TO_PIXEL(iterationTruth->scalar()), _layer);
             }
 
             //Execute forward and backward passes of the compute graph to derive gradients.
-            epochLoss += loss._output_node->forwardPass();
+            const PRECISE_NBR iterationLoss{loss._output_node->forwardPass()};
+            epochLoss += iterationLoss;
             loss._output_node->backwardPass();
 
             //Run over all layers to update all weights and biases.
@@ -81,6 +89,9 @@ void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
                 }
                 pos = pos->_previous;
             }
+
+            std::cout<<"\r \r";
+            std::cout << "iteration done, avg loss: " << iterationLoss;
         }
 
         epochLoss /= _truth->shapeSize(0);

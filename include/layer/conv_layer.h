@@ -16,7 +16,7 @@ public:
     /// When creating first conv layer use this constructor.
     ConvolutionalLayer(PIXEL filterSize, PIXEL filterStride, INDEX_NBR kernelCount, INDEX_NBR inputHeight, INDEX_NBR inputWidth, INDEX_NBR inputDepth);
     explicit ConvolutionalLayer(const std::shared_ptr<ConvolutionalLayer>& previous, PIXEL filterStride, PIXEL filterSize, INDEX_NBR kernelCount);
-    void setInputs(const std::shared_ptr<Tensor<PIXEL>>& input) const;
+    void setInputs(const std::shared_ptr<Tensor<PRECISE_NBR>>& input) const;
     USE_RETURN Vector<std::shared_ptr<ComputeNode>> getComputeNodes() const override;
     void buildOutputNode(INDEX_NBR newHeight, INDEX_NBR newWidth, INDEX_NBR filterStride, INDEX_NBR filterSize);
 };
