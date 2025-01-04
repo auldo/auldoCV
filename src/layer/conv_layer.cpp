@@ -1,6 +1,6 @@
 #include "layer/conv_layer.h"
 
-void ConvolutionalLayer::buildOutputNode(INDEX_NBR newHeight, INDEX_NBR newWidth, INDEX_NBR filterStride, INDEX_NBR filterSize) {
+void ConvolutionalLayer::buildOutputNode(ActivationFunction activation, INDEX_NBR newHeight, INDEX_NBR newWidth, INDEX_NBR filterStride, INDEX_NBR filterSize) {
     //Iterate over each kernel of this layer.
     //Each kernel represents an output layer.
     //Each kernel runs over all input layers and reduces them in 1 single layer.
@@ -23,13 +23,13 @@ void ConvolutionalLayer::buildOutputNode(INDEX_NBR newHeight, INDEX_NBR newWidth
                     }
                 }
 
-                _output->at({r, c, k}) = pixel;
+                _output->at({r, c, k}) = applyActivationFunction(activation, pixel);
             }
         }
     }
 }
 
-ConvolutionalLayer::ConvolutionalLayer(const std::shared_ptr<ConvolutionalLayer>& previous, PIXEL filterStride, PIXEL filterSize, INDEX_NBR kernelCount) : Layer(previous), _kernels(kernelCount) {
+ConvolutionalLayer::ConvolutionalLayer(ActivationFunction activation, const std::shared_ptr<ConvolutionalLayer>& previous, PIXEL filterStride, PIXEL filterSize, INDEX_NBR kernelCount) : Layer(previous), _kernels(kernelCount) {
     _inputHeight = previous->_output->shapeSize(0);
     _inputWidth = previous->_output->shapeSize(1);
     _inputDepth = previous->_output->shapeSize(2);
@@ -43,10 +43,10 @@ ConvolutionalLayer::ConvolutionalLayer(const std::shared_ptr<ConvolutionalLayer>
     INDEX_NBR newWidth = _kernels.at(0)->calculateOutputDimension(_inputWidth);
 
     _output = std::make_shared<BaseTensor<std::shared_ptr<ComputeNode>>>(Vector({newHeight, newWidth, kernelCount}));
-    buildOutputNode(newHeight, newWidth, filterStride, filterSize);
+    buildOutputNode(activation, newHeight, newWidth, filterStride, filterSize);
 }
 
-ConvolutionalLayer::ConvolutionalLayer(PIXEL filterSize, PIXEL filterStride, INDEX_NBR kernelCount, INDEX_NBR inputHeight, INDEX_NBR inputWidth, INDEX_NBR inputDepth) : _inputHeight(inputHeight), _inputWidth(inputWidth), _inputDepth(inputDepth), _kernels(kernelCount) {
+ConvolutionalLayer::ConvolutionalLayer(ActivationFunction activation, PIXEL filterSize, PIXEL filterStride, INDEX_NBR kernelCount, INDEX_NBR inputHeight, INDEX_NBR inputWidth, INDEX_NBR inputDepth) : _inputHeight(inputHeight), _inputWidth(inputWidth), _inputDepth(inputDepth), _kernels(kernelCount) {
     _input = std::make_shared<BaseTensor<std::shared_ptr<ComputeNode>>>(Vector({inputHeight, inputWidth, inputDepth}));
     for(INDEX_NBR r{0}; r < inputHeight; ++r) {
         for(INDEX_NBR c{0}; c < inputWidth; ++c) {
@@ -63,7 +63,7 @@ ConvolutionalLayer::ConvolutionalLayer(PIXEL filterSize, PIXEL filterStride, IND
     INDEX_NBR newHeight = _kernels.at(0)->calculateOutputDimension(inputHeight);
     INDEX_NBR newWidth = _kernels.at(0)->calculateOutputDimension(inputWidth);
     _output = std::make_shared<BaseTensor<std::shared_ptr<ComputeNode>>>(Vector({newHeight, newWidth, kernelCount}));
-    buildOutputNode(newHeight, newWidth, filterStride, filterSize);
+    buildOutputNode(activation, newHeight, newWidth, filterStride, filterSize);
 }
 
 void ConvolutionalLayer::setInputs(const std::shared_ptr<Tensor<PRECISE_NBR>> &input) const {
