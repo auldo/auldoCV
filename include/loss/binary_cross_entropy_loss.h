@@ -5,5 +5,5 @@
 
 class BinaryCrossEntropyLoss : public Loss {
 public:
-    explicit BinaryCrossEntropyLoss(PRECISE_NBR label, const std::shared_ptr<Layer>& finalLayer);
+    explicit BinaryCrossEntropyLoss(PRECISE_NBR label, const PTR<ComputeNode>& node);
 };

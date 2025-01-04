@@ -9,4 +9,5 @@ public:
     explicit FCLayer(INDEX_NBR size, ActivationFunction activation, INDEX_NBR inputSize);
     explicit FCLayer(INDEX_NBR size, ActivationFunction activation, const std::shared_ptr<Layer>& layer);
     USE_RETURN Vector<std::shared_ptr<ComputeNode>> getComputeNodes() const override;
+    void clone(INDEX_NBR depth) const;
 };

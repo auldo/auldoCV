@@ -61,13 +61,13 @@ void SgdOptimizer::optimize(PRECISE_NBR learningRate) {
             Loss loss;
             switch(_lossFunction) {
                 case MSE:
-                    loss = MSELoss(iterationTruth->scalar(), _layer);
+                    loss = MSELoss(iterationTruth->scalar(), std::dynamic_pointer_cast<FCLayer>(_layer)->_neurons.at(0)->_output_node);
                     break;
                 case BINARY_CROSS_ENTROPY:
-                    loss = BinaryCrossEntropyLoss(iterationTruth->scalar(), _layer);
+                    loss = BinaryCrossEntropyLoss(iterationTruth->scalar(), std::dynamic_pointer_cast<FCLayer>(_layer)->_neurons.at(0)->_output_node);
                     break;
                 case CROSS_ENTROPY:
-                    loss = CrossEntropyLoss(TO_PIXEL(iterationTruth->scalar()), _layer);
+                    loss = CrossEntropyLoss(iterationTruth->scalar(), std::dynamic_pointer_cast<FCLayer>(_layer)->getComputeNodes());
             }
 
             //Execute forward and backward passes of the compute graph to derive gradients.

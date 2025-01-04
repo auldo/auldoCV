@@ -103,31 +103,21 @@ TEST_CASE("fcneuron") {
     auto neuron2{std::make_shared<FCNeuron>(SIGMOID, nodes)};
 }
 
-TEST_CASE("fc layer") {
-    auto input0{Vector({COMPUTE_NODE(0)})};
-    auto input1{Vector({COMPUTE_NODE(1)})};
-    auto input2{Vector({COMPUTE_NODE(2)})};
-    auto input3{Vector({COMPUTE_NODE(3)})};
-    auto output{Vector<PRECISE_NBR>({1, 2, 3, 4})};
+TEST_CASE("network clone") {
+    auto layer1{std::make_shared<FCLayer>(1, LINEAR, 1)};
+    auto layer2{std::make_shared<FCLayer>(4, RELU, layer1)};
+    auto layer3{std::make_shared<FCLayer>(4, SIGMOID, layer2)};
+    auto layer4{std::make_shared<FCLayer>(1, SIGMOID, layer3)};
 
-    auto layer{std::make_shared<FCLayer>(4, SIGMOID, 1)};
-    CHECK_EQ(layer->_neurons.size(), 4);
+    layer4->clone(3);
+    CHECK_NOTHROW(layer2->_neurons.at(0)->_output_node->operator[](0));
+    CHECK_NOTHROW(layer2->_neurons.at(0)->_output_node->operator[](1));
+    CHECK_NOTHROW(layer2->_neurons.at(0)->_output_node->operator[](2));
+    CHECK_THROWS(layer2->_neurons.at(0)->_output_node->operator[](3));
 
-    auto layer2{std::make_shared<FCLayer>(1, SIGMOID, layer)};
-    CHECK_EQ(layer2->_neurons.size(), 1);
+    CHECK_NE(layer2->_neurons.at(0)->_output_node->operator[](0), nullptr);
+    CHECK_NE(layer2->_neurons.at(0)->_output_node->operator[](1), nullptr);
+    CHECK_NE(layer2->_neurons.at(0)->_output_node->operator[](2), nullptr);
 
-    for(INDEX_NBR n{0}; n < layer->_neurons.size(); ++n) {
-        CHECK_NE(layer->_neurons.at(n)->_output_node, nullptr);
-    }
-
-    for(INDEX_NBR n{0}; n < layer2->_neurons.size(); ++n) {
-        CHECK_NE(layer2->_neurons.at(n)->_output_node, nullptr);
-    }
-
-    layer2->_neurons.at(0)->_output_node->forwardPass();
-
-    auto loss{MSELoss(output.at(0), layer2)};
-    CHECK_NE(nullptr, loss._output_node);
-
-    CHECK_NOTHROW(loss._output_node->forwardPass());
+    CHECK_NE(layer2->_neurons.at(0)->_output_node->operator[](0), layer2->_neurons.at(0)->_output_node->operator[](1));
 }

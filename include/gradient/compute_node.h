@@ -10,7 +10,7 @@
 
 /// A node in a computational graph.
 /// Primarily used to apply the chain rule to complex functions.
-class ComputeNode {
+class ComputeNode : public std::enable_shared_from_this<ComputeNode> {
 
     using ComputeNodeDynamicArgs = Vector<std::shared_ptr<ComputeNode>>;
     using ComputeNodeConstArgs = Vector<PRECISE_NBR>;
@@ -36,6 +36,8 @@ class ComputeNode {
     std::optional<PRECISE_NBR> _gradient;
 
     Vector<PRECISE_NBR> _gradientStorage;
+
+    Vector<std::shared_ptr<ComputeNode>> _clones;
 
 public:
     ComputeNode();
@@ -97,6 +99,11 @@ public:
     void setGradientStorage(INDEX_NBR index);
     void applyAverageGradient(PRECISE_NBR factor);
 
+    void setCloneDepth(INDEX_NBR depth);
+
     /// if called from the final node of the graph, this clones the full compute graph.
-    std::shared_ptr<ComputeNode> clone();
+    std::shared_ptr<ComputeNode> clone(INDEX_NBR depth);
+
+    static void cloneNetwork(const Vector<PTR<ComputeNode>>& layer, INDEX_NBR depth);
+    std::shared_ptr<ComputeNode> operator[](INDEX_NBR index) const;
 };

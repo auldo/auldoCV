@@ -5,5 +5,5 @@
 
 class MSELoss : public Loss {
 public:
-    explicit MSELoss(PRECISE_NBR label, const std::shared_ptr<Layer>& finalLayer);
+    explicit MSELoss(PRECISE_NBR label, const PTR<ComputeNode>& node);
 };

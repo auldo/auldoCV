@@ -1,5 +1,6 @@
 #include "gradient/compute_node.h"
 
+
 ComputeNode::ComputeNode(PRECISE_NBR scalar): _scalar(scalar), _type(SCALAR) {}
 
 ComputeNode::ComputeNode(ComputeNodeType op, ComputeNodeDynamicArgs dynamicArgs): _type(op), _dynamicArgs(std::move(dynamicArgs)) {
@@ -174,8 +175,14 @@ void ComputeNode::applyAverageGradient(double factor) {
 
 ComputeNode::ComputeNode() : _type(OP_PLUS), _gradient(std::nullopt), _scalar(std::nullopt) {}
 
+void ComputeNode::setCloneDepth(INDEX_NBR depth) {
+    _clones = Vector<PTR<ComputeNode>>(depth);
+    for(auto& elem : _dynamicArgs)
+        elem->setCloneDepth(depth);
+}
 
-std::shared_ptr<ComputeNode> ComputeNode::clone() {
+
+PTR<ComputeNode> ComputeNode::clone(INDEX_NBR depth) {
     auto cloned{std::make_shared<ComputeNode>()};
     cloned->_type = _type;
 
@@ -191,7 +198,26 @@ std::shared_ptr<ComputeNode> ComputeNode::clone() {
 
     cloned->_dynamicArgs = Vector<std::shared_ptr<ComputeNode>>(_dynamicArgs.size());
     for(auto i{0}; i < _dynamicArgs.size(); ++i)
-        cloned->_dynamicArgs.at(i) = _dynamicArgs.at(i)->clone();
+        cloned->_dynamicArgs.at(i) = _dynamicArgs.at(i)->clone(depth);
 
+    _clones.at(depth) = cloned;
     return cloned;
+}
+
+void ComputeNode::cloneNetwork(const Vector<PTR<ComputeNode>>& layer, unsigned int depth) {
+    auto outputCount{layer.size()};
+
+    auto connector{COMPUTE_NODE(0)};
+    for(INDEX_NBR i{0}; i < outputCount; ++i)
+        connector = COMPUTE_NODE_PLUS(connector, layer.at(i));
+
+    connector->setCloneDepth(depth);
+    for(auto d{0}; d < depth; ++d)
+        connector->clone(d);
+}
+
+std::shared_ptr<ComputeNode> ComputeNode::operator[](INDEX_NBR index) const {
+    if(index >= _clones.size())
+        throw std::runtime_error("out of bounds");
+    return _clones.at(index);
 }
