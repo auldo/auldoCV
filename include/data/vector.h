@@ -115,4 +115,12 @@ public:
         for(auto& elem : *this)
             elem = value;
     }
+
+    bool contains(INDEX_NBR nbr) {
+        for(const auto& elem : *this) {
+            if(elem == nbr)
+                return true;
+        }
+        return false;
+    }
 };

@@ -3,6 +3,12 @@
 MiniBatchOptimizer::MiniBatchOptimizer(const std::shared_ptr<Layer> &finalLayer, unsigned int iterations, unsigned int miniBatchSize, LossFunction loss, const std::shared_ptr<Tensor<double> > &truth, const std::shared_ptr<Tensor<double> > &inputs) : Optimizer(finalLayer, loss, truth, inputs), _iterations(iterations), _batchSize(miniBatchSize) {}
 
 USE_RETURN Vector<INDEX_NBR> MiniBatchOptimizer::selectMiniBatch() const {
+    if(_batchSize == _inputs->shapeSize(0)) {
+        Vector<INDEX_NBR> selection(_batchSize);
+        for(auto i{0}; i < _batchSize; ++i)
+            selection.at(i) = i;
+        return selection;
+    }
     static std::random_device rdev;
     static std::default_random_engine re(rdev());
     typedef std::conditional_t<
@@ -12,8 +18,12 @@ USE_RETURN Vector<INDEX_NBR> MiniBatchOptimizer::selectMiniBatch() const {
     dist_type uni(0, static_cast<int>(_inputs->shapeSize(0)) - 1);
 
     Vector<INDEX_NBR> selection(_batchSize);
-    for(INDEX_NBR i{0}; i < _batchSize; ++i)
-        selection.at(i) = uni(re);
+    for(INDEX_NBR i{0}; i < _batchSize; ++i) {
+        int elem{uni(re)};
+        while(selection.contains(elem))
+            elem = uni(re);
+        selection.at(i) = elem;
+    }
     return selection;
 }
 
@@ -77,8 +87,6 @@ void MiniBatchOptimizer::optimize(double learningRate) {
             epochLoss += iterationLoss;
             loss._output_node->backwardPass();
             setGradientStorage(s);
-
-            std::cout << "single iteration done." << std::endl;;
         }
 
         //Run over all layers to update all weights and biases.
