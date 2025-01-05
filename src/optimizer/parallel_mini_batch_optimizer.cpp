@@ -72,8 +72,11 @@ void ParallelMiniBatchOptimizer::optimize(double learningRate) {
                     auto iterationInput{_inputs->operator[](i)};
                     for(INDEX_NBR r{0}; r < layer->_inputHeight; ++r) {
                         for(INDEX_NBR c{0}; c < layer->_inputWidth; ++c) {
-                            for(INDEX_NBR ch{0}; ch < layer->_inputDepth; ++ch)
-                                layer->_input->at({r, c, ch})->operator[](s)->setScalarValue(iterationInput->at({r, c, ch}));
+                            for(INDEX_NBR ch{0}; ch < layer->_inputDepth; ++ch) {
+                                try {
+                                    layer->_input->at({r, c, ch})->operator[](s)->setScalarValue(iterationInput->at({r, c, ch}));
+                                } catch(std::exception &_) {}
+                            }
                         }
                     }
                 }

@@ -45,3 +45,6 @@ target_link_libraries(auldoCV_tests PRIVATE auldoCV)
 # example executables
 add_executable(auldoCV_example_2d_function_approximation examples/2d_function_approximation/main.cpp)
 target_link_libraries(auldoCV_example_2d_function_approximation PRIVATE auldoCV)
+
+add_executable(auldoCV_example_cifar_imge_classification examples/cifar_imge_classification/main.cpp)
+target_link_libraries(auldoCV_example_cifar_imge_classification PRIVATE auldoCV)
