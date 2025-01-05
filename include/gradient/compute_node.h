@@ -98,6 +98,7 @@ public:
     void rescaleGradientStorage(INDEX_NBR size);
     void setGradientStorage(INDEX_NBR index);
     void applyAverageGradient(PRECISE_NBR factor);
+    void applyAverageCloneGradient(PRECISE_NBR factor);
 
     void setCloneDepth(INDEX_NBR depth);
 
@@ -105,5 +106,5 @@ public:
     std::shared_ptr<ComputeNode> clone(INDEX_NBR depth);
 
     static void cloneNetwork(const Vector<PTR<ComputeNode>>& layer, INDEX_NBR depth);
-    std::shared_ptr<ComputeNode> operator[](INDEX_NBR index) const;
+    std::shared_ptr<ComputeNode> operator[](INDEX_NBR index);
 };

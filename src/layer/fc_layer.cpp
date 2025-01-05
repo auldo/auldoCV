@@ -20,6 +20,13 @@ Vector<std::shared_ptr<ComputeNode>> FCLayer::getComputeNodes() const {
     return result;
 }
 
+Vector<std::shared_ptr<ComputeNode>> FCLayer::getComputeNodes(INDEX_NBR depth) const {
+    Vector<std::shared_ptr<ComputeNode>> result(_neurons.size());
+    for(INDEX_NBR i{0}; i < result.size(); ++i)
+        result.at(i) = _neurons.at(i)->_output_node->operator[](depth);
+    return result;
+}
+
 void FCLayer::clone(INDEX_NBR depth) const {
     ComputeNode::cloneNetwork(getComputeNodes(), depth);
 }

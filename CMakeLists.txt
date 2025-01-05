@@ -22,7 +22,8 @@ add_library(auldoCV
         src/layer/conv_layer.cpp
         src/loss/cross_entropy_loss.cpp
         src/optimizer/mini_batch_optimizer.cpp
-        src/optimizer/optimizer.cpp)
+        src/optimizer/optimizer.cpp
+        src/optimizer/parallel_mini_batch_optimizer.cpp)
 find_package(OpenCV REQUIRED)
 target_include_directories(auldoCV PUBLIC ${OPENCV_INCLUDE_DIRS})
 target_include_directories(auldoCV PUBLIC include)

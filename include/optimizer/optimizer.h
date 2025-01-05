@@ -17,6 +17,7 @@ protected:
     Optimizer(const std::shared_ptr<Layer>& layer, LossFunction loss, const std::shared_ptr<Tensor<PRECISE_NBR>>& truth, const std::shared_ptr<Tensor<PRECISE_NBR>>& inputs);
     void updateWeights(PRECISE_NBR learningRate) const;
     void updateAverageWeights(PRECISE_NBR learningRate) const;
+    void updateAverageCloneWeights(PRECISE_NBR learningRate) const;
     void rescaleGradientStorages(INDEX_NBR size) const;
     void setGradientStorage(INDEX_NBR idx) const;
 public:

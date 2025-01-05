@@ -35,8 +35,9 @@ int main() {
         auto optimizer{std::make_shared<SgdOptimizer>(layer4, 10000, BINARY_CROSS_ENTROPY, outputs, inputs)};
         optimizer->optimize(0.001);
     } else {
-        auto optimizer{std::make_shared<MiniBatchOptimizer>(layer4, 10000, 10, BINARY_CROSS_ENTROPY, outputs, inputs)};
-        optimizer->optimize(0.03);
+        auto optimizer{std::make_shared<ParallelMiniBatchOptimizer>(layer4, 50000, 1, BINARY_CROSS_ENTROPY, outputs, inputs)};
+        //optimizer->optimize(0.03);
+        optimizer->optimize(0.02);
     }
 
     for(INDEX_NBR i{0}; i < 10; ++i) {

@@ -113,7 +113,8 @@ TEST_CASE("network clone") {
     CHECK_NOTHROW(layer2->_neurons.at(0)->_output_node->operator[](0));
     CHECK_NOTHROW(layer2->_neurons.at(0)->_output_node->operator[](1));
     CHECK_NOTHROW(layer2->_neurons.at(0)->_output_node->operator[](2));
-    CHECK_THROWS(layer2->_neurons.at(0)->_output_node->operator[](3));
+    CHECK_NOTHROW(layer2->_neurons.at(0)->_output_node->operator[](3));
+    CHECK_THROWS(layer2->_neurons.at(0)->_output_node->operator[](4));
 
     CHECK_NE(layer2->_neurons.at(0)->_output_node->operator[](0), nullptr);
     CHECK_NE(layer2->_neurons.at(0)->_output_node->operator[](1), nullptr);

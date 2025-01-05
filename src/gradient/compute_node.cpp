@@ -165,11 +165,19 @@ void ComputeNode::setGradientStorage(INDEX_NBR index) {
     _gradientStorage.at(index) = gradient();
 }
 
-void ComputeNode::applyAverageGradient(double factor) {
+void ComputeNode::applyAverageGradient(PRECISE_NBR factor) {
     PRECISE_NBR sum{0};
     for(const auto& elem : _gradientStorage)
         sum += elem;
     PRECISE_NBR weightedSum{sum / _gradientStorage.size()};
+    setScalarValue(getScalarValue() - factor * weightedSum);
+}
+
+void ComputeNode::applyAverageCloneGradient(PRECISE_NBR factor) {
+    PRECISE_NBR sum{gradient()};
+    for(const auto& elem : _clones)
+        sum += elem->gradient();
+    PRECISE_NBR weightedSum{sum / (_clones.size() + 1)};
     setScalarValue(getScalarValue() - factor * weightedSum);
 }
 
@@ -216,8 +224,10 @@ void ComputeNode::cloneNetwork(const Vector<PTR<ComputeNode>>& layer, unsigned i
         connector->clone(d);
 }
 
-std::shared_ptr<ComputeNode> ComputeNode::operator[](INDEX_NBR index) const {
-    if(index >= _clones.size())
+std::shared_ptr<ComputeNode> ComputeNode::operator[](INDEX_NBR index) {
+    if(index == 0)
+        return shared_from_this();
+    if(index > _clones.size())
         throw std::runtime_error("out of bounds");
-    return _clones.at(index);
+    return _clones.at(index - 1);
 }
