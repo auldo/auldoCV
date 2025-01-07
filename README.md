@@ -14,3 +14,9 @@ Currently, the project provides an implementation of the following features. It'
    1. Stochastic Gradient Descent (SGD)
    2. Mini-Batch Gradient Descent
    3. Parallel Mini-Batch Gradient Descent
+
+## Missing
+lots of things, but mainly:
+1. Dataset splitter
+2. Extensive tests
+3. Increase performance: Especially for kernels, incorporate more multi-threading / parallelization
