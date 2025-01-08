@@ -35,5 +35,7 @@ CN_PTR create_operator_compute_node(CN_OP_TYPE operator, CN_PTR first, CN_PTR se
 void free_compute_node(CN_PTR node);
 CN_BOOL_TYPE compute_node_is_scalar(const CN_PTR node);
 CN_TYPE scalar(CN_PTR node);
+void set_scalar(CN_PTR node, CN_TYPE val);
+void assert_scalar(CN_PTR node);
 
 #endif //AULDO_CV_COMPUTE_NODE_H

@@ -21,10 +21,19 @@ void free_compute_node(CN_PTR node) {
     free(node);
 }
 
-CN_TYPE scalar(CN_PTR node) {
+void assert_scalar(CN_PTR node) {
     if(!compute_node_is_scalar(node))
         THROW("expected scalar");
-    return *((CN_TYPE*) node->first);
+}
+
+CN_TYPE scalar(CN_PTR node) {
+    assert_scalar(node);
+    return *(CN_TYPE*) node->first;
+}
+
+void set_scalar(CN_PTR node, CN_TYPE val) {
+    assert_scalar(node);
+    *(CN_TYPE*) node->first = val;
 }
 
 CN_PTR create_operator_compute_node(CN_OP_TYPE operator, CN_PTR first, CN_PTR second) {
