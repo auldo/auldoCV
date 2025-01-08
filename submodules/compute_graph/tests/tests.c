@@ -10,7 +10,7 @@ void tearDown() {
 }
 
 void scalar_compute_node_test() {
-    CN_PTR node = create_scalar_compute_node(4.5);
+    CN_PTR node = VAR(4.5);
     TEST_ASSERT_EQUAL(value(node), 4.5);
     TEST_ASSERT_TRUE(compute_node_is_scalar(node));
     TEST_ASSERT_FALSE(compute_node_is_constant(node));
@@ -23,7 +23,7 @@ void scalar_compute_node_test() {
 }
 
 void constant_compute_node_test() {
-    CN_PTR node = create_constant_compute_node(4.5);
+    CN_PTR node = CONST(4.5);
     TEST_ASSERT_EQUAL(value(node), 4.5);
     TEST_ASSERT_FALSE(compute_node_is_scalar(node));
     TEST_ASSERT_TRUE(compute_node_is_constant(node));
