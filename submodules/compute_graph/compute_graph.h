@@ -2,6 +2,7 @@
 #define AULDO_CV_COMPUTE_GRAPH_H
 
 #include "compute_node.h"
+#include "compute_tensor.h"
 
 CN_TYPE run_compute_graph_forward(CN_PTR node);
 

@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.29)
 project(auldo_cv_compute_graph)
 
 add_library(auldo_cv_compute_graph compute_node.c
-        compute_graph.c)
+        compute_graph.c
+        compute_tensor.c)
 target_include_directories(auldo_cv_compute_graph PUBLIC ./)
 
 # Unity library

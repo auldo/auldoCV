@@ -1,5 +1,4 @@
 #include "unity.h"
-#include "compute_node.h"
 #include "compute_graph.h"
 
 void setUp() {
@@ -72,6 +71,17 @@ void test_forward_run() {
     TEST_ASSERT_EQUAL(10., result);
 }
 
+void compute_tensor_tests() {
+    CT_PTR tensor = create_mat_compute_tensor(10, 15);
+    TEST_ASSERT_EQUAL(150, tensor->length);
+
+    unsigned int indices[2];
+    indices[0] = 1;
+    indices[1] = 2;
+
+    TEST_ASSERT_EQUAL(17, transform_indices(tensor, indices));
+}
+
 // not needed when using generate_test_runner.rb
 int main(void) {
     UNITY_BEGIN();
@@ -79,5 +89,6 @@ int main(void) {
     RUN_TEST(constant_compute_node_test);
     RUN_TEST(test_operator_compute_node);
     RUN_TEST(test_forward_run);
+    RUN_TEST(compute_tensor_tests);
     return UNITY_END();
 }
