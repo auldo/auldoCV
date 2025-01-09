@@ -1,10 +1,20 @@
 #include "compute_tensor.h"
 
-CT_PTR create_compute_tensor(unsigned int rank, unsigned int* indices) {
-    if(rank == 0) {
-        THROW("rank 0 tensors not supported, yet")
-    }
+CT_PTR create_scalar_compute_tensor(CN_PTR node) {
+    CN_PTR* nodes = malloc(sizeof(CN_PTR));
+    nodes[0] = node;
 
+    CT_PTR tensor = malloc(sizeof(struct CT));
+    tensor->rank = 0;
+    tensor->dimensions = NULL;
+    tensor->data = nodes;
+    tensor->length = 1;
+    return tensor;
+}
+
+CT_PTR create_compute_tensor(unsigned int rank, unsigned int* indices) {
+    if(rank == 0)
+        return create_scalar_compute_tensor(NULL);
     unsigned int* dimensions = malloc(rank * sizeof(unsigned int));
     memcpy(dimensions, indices, rank * sizeof(unsigned int));
     unsigned int length = 1;
@@ -63,6 +73,11 @@ void insert_into_mat_compute_tensor(CT_PTR tensor, CN_PTR node, unsigned int row
 }
 
 CN_PTR get_compute_tensor_value(const CT_PTR tensor, unsigned int* indices) {
+    if(indices == NULL && tensor->rank == 0) {
+        return tensor->data[0];
+    }
+    if(indices == NULL)
+        THROW("indices must be given unless tensor is of rank 0")
     unsigned int index = transform_indices(tensor, indices);
     if(index >= tensor->length)
         THROW("out of bounds");

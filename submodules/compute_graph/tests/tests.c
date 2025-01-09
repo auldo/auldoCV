@@ -87,6 +87,14 @@ void mat_compute_tensor_tests() {
     TEST_ASSERT_NULL(get_mat_compute_tensor_value(tensor, 0, 0));
 }
 
+void scalar_compute_tensor_tests() {
+    CT_PTR tensor = create_scalar_compute_tensor(CONST(5));
+
+    TEST_ASSERT_EQUAL(1, tensor->length);
+    TEST_ASSERT_EQUAL(0, tensor->rank);
+    TEST_ASSERT_EQUAL(5, value(get_compute_tensor_value(tensor, NULL)));
+}
+
 // not needed when using generate_test_runner.rb
 int main(void) {
     UNITY_BEGIN();
@@ -95,5 +103,6 @@ int main(void) {
     RUN_TEST(test_operator_compute_node);
     RUN_TEST(test_forward_run);
     RUN_TEST(mat_compute_tensor_tests);
+    RUN_TEST(scalar_compute_tensor_tests);
     return UNITY_END();
 }
