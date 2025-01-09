@@ -41,6 +41,32 @@ CT_PTR create_mat_compute_tensor(unsigned int rows, unsigned int cols) {
     return create_compute_tensor(2, dimensions);
 }
 
+CT_PTR access_tensor(const CT_PTR tensor, int index) {
+    if(tensor->rank == 0)
+        THROW("expected tensor of min rank 1");
+    if(tensor->rank == 1)
+        return create_scalar_compute_tensor(tensor->data[index]);
+    unsigned int rank = tensor->rank - 1;
+    unsigned int length = tensor->length / tensor->dimensions[0];
+    unsigned int* dimensions = malloc(rank * sizeof(unsigned int));
+    for(unsigned int i = 0; i < rank; ++i)
+        dimensions[i] = tensor->dimensions[i + 1];
+
+    unsigned int* indices = malloc(tensor->rank * sizeof(int));
+    indices[0] = index;
+    for(unsigned int i = 1; i < tensor->rank; ++i)
+        indices[i] = 0;
+    unsigned int start = transform_indices(tensor, indices);
+    free(indices);
+
+    CT_PTR accessed = malloc(sizeof(struct CT));
+    accessed->dimensions = dimensions;
+    accessed->length = length;
+    accessed->rank = rank;
+    accessed->data = &tensor->data[start];
+    return accessed;
+}
+
 unsigned int transform_indices(const CT_PTR tensor, unsigned int* indices) {
     if(tensor->rank == 0)
         THROW("can't transform indices for tensor of rank 0");
@@ -72,6 +98,12 @@ void insert_into_mat_compute_tensor(CT_PTR tensor, CN_PTR node, unsigned int row
     return insert_into_compute_tensor(tensor, node, indices);
 }
 
+void insert_into_vec_compute_tensor(CT_PTR tensor, CN_PTR node, unsigned int index) {
+    unsigned int indices[1];
+    indices[0] = index;
+    return insert_into_compute_tensor(tensor, node, indices);
+}
+
 CN_PTR get_compute_tensor_value(const CT_PTR tensor, unsigned int* indices) {
     if(indices == NULL && tensor->rank == 0) {
         return tensor->data[0];
@@ -88,5 +120,11 @@ CN_PTR get_mat_compute_tensor_value(const CT_PTR tensor, unsigned int rows, unsi
     unsigned int indices[2];
     indices[0] = rows;
     indices[1] = cols;
+    return get_compute_tensor_value(tensor, indices);
+}
+
+CN_PTR get_vec_compute_tensor_value(const CT_PTR tensor, unsigned int index) {
+    unsigned int indices[1];
+    indices[0] = index;
     return get_compute_tensor_value(tensor, indices);
 }

@@ -95,6 +95,30 @@ void scalar_compute_tensor_tests() {
     TEST_ASSERT_EQUAL(5, value(get_compute_tensor_value(tensor, NULL)));
 }
 
+void access_tensor_tests() {
+    CT_PTR tensor = create_mat_compute_tensor(10, 15);
+    TEST_ASSERT_EQUAL(150, tensor->length);
+    TEST_ASSERT_EQUAL(2, tensor->rank);
+
+    for(unsigned int i = 0; i < tensor->dimensions[1]; ++i)
+        insert_into_mat_compute_tensor(tensor, VAR(i), 4, i);
+
+    for(unsigned int i = 0; i < tensor->dimensions[1]; ++i)
+        TEST_ASSERT_EQUAL(i, value(get_mat_compute_tensor_value(tensor, 4, i)));
+
+    CT_PTR view = access_tensor(tensor, 4);
+    TEST_ASSERT_EQUAL(15, view->length);
+    TEST_ASSERT_EQUAL(1, view->rank);
+    TEST_ASSERT_EQUAL(15, view->dimensions[0]);
+
+    for(unsigned int i = 0; i < view->dimensions[0]; ++i)
+        TEST_ASSERT_EQUAL(i, value(get_vec_compute_tensor_value(view, i)));
+
+    free(get_vec_compute_tensor_value(view, 5));
+    insert_into_vec_compute_tensor(view, CONST(14), 5);
+    TEST_ASSERT_EQUAL(14, value(get_mat_compute_tensor_value(tensor, 4, 5)));
+}
+
 // not needed when using generate_test_runner.rb
 int main(void) {
     UNITY_BEGIN();
@@ -104,5 +128,6 @@ int main(void) {
     RUN_TEST(test_forward_run);
     RUN_TEST(mat_compute_tensor_tests);
     RUN_TEST(scalar_compute_tensor_tests);
+    RUN_TEST(access_tensor_tests);
     return UNITY_END();
 }
