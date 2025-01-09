@@ -71,7 +71,7 @@ void test_forward_run() {
     TEST_ASSERT_EQUAL(10., result);
 }
 
-void compute_tensor_tests() {
+void mat_compute_tensor_tests() {
     CT_PTR tensor = create_mat_compute_tensor(10, 15);
     TEST_ASSERT_EQUAL(150, tensor->length);
 
@@ -80,6 +80,11 @@ void compute_tensor_tests() {
     indices[1] = 2;
 
     TEST_ASSERT_EQUAL(17, transform_indices(tensor, indices));
+
+    CN_PTR node = CONST(5);
+    insert_into_mat_compute_tensor(tensor, node, 9, 14);
+    TEST_ASSERT_EQUAL(5, value(get_mat_compute_tensor_value(tensor, 9, 14)));
+    TEST_ASSERT_NULL(get_mat_compute_tensor_value(tensor, 0, 0));
 }
 
 // not needed when using generate_test_runner.rb
@@ -89,6 +94,6 @@ int main(void) {
     RUN_TEST(constant_compute_node_test);
     RUN_TEST(test_operator_compute_node);
     RUN_TEST(test_forward_run);
-    RUN_TEST(compute_tensor_tests);
+    RUN_TEST(mat_compute_tensor_tests);
     return UNITY_END();
 }

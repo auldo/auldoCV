@@ -24,14 +24,14 @@ CT_PTR create_compute_tensor(unsigned int rank, unsigned int* indices) {
     return tensor;
 }
 
-CT_PTR create_mat_compute_tensor(int rows, int cols) {
-    int dimensions[2];
+CT_PTR create_mat_compute_tensor(unsigned int rows, unsigned int cols) {
+    unsigned int dimensions[2];
     dimensions[0] = rows;
     dimensions[1] = cols;
     return create_compute_tensor(2, dimensions);
 }
 
-unsigned int transform_indices(CT_PTR tensor, unsigned int* indices) {
+unsigned int transform_indices(const CT_PTR tensor, unsigned int* indices) {
     if(tensor->rank == 0)
         THROW("can't transform indices for tensor of rank 0");
     if(tensor->rank == 1)
@@ -46,4 +46,32 @@ unsigned int transform_indices(CT_PTR tensor, unsigned int* indices) {
         result += (indices[idx] * sum);
     }
     return result;
+}
+
+void insert_into_compute_tensor(CT_PTR tensor, CN_PTR node, unsigned int* indices) {
+    unsigned int index = transform_indices(tensor, indices);
+    if(index >= tensor->length)
+        THROW("out of bounds");
+    tensor->data[index] = node;
+}
+
+void insert_into_mat_compute_tensor(CT_PTR tensor, CN_PTR node, unsigned int rows, unsigned int cols) {
+    unsigned int indices[2];
+    indices[0] = rows;
+    indices[1] = cols;
+    return insert_into_compute_tensor(tensor, node, indices);
+}
+
+CN_PTR get_compute_tensor_value(const CT_PTR tensor, unsigned int* indices) {
+    unsigned int index = transform_indices(tensor, indices);
+    if(index >= tensor->length)
+        THROW("out of bounds");
+    return tensor->data[index];
+}
+
+CN_PTR get_mat_compute_tensor_value(const CT_PTR tensor, unsigned int rows, unsigned int cols) {
+    unsigned int indices[2];
+    indices[0] = rows;
+    indices[1] = cols;
+    return get_compute_tensor_value(tensor, indices);
 }

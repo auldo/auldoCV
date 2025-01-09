@@ -21,12 +21,15 @@ struct CT {
     CN_PTR* data;
 };
 
-unsigned int transform_indices(CT_PTR tensor, unsigned int* indices);
+unsigned int transform_indices(const CT_PTR tensor, unsigned int* indices);
 
 CT_PTR create_compute_tensor(unsigned int rank, unsigned int* indices);
-CT_PTR create_mat_compute_tensor(int rows, int cols);
+CT_PTR create_mat_compute_tensor(unsigned int rows, unsigned int cols);
 
-//void insert_into_compute_tensor(CT_PTR tensor, CN_PTR node, unsigned int* indices);
-//void insert_into_mat_ct(int r, int c);
+void insert_into_compute_tensor(CT_PTR tensor, CN_PTR node, unsigned int* indices);
+void insert_into_mat_compute_tensor(CT_PTR tensor, CN_PTR node, unsigned int rows, unsigned int cols);
+
+CN_PTR get_compute_tensor_value(const CT_PTR tensor, unsigned int* indices);
+CN_PTR get_mat_compute_tensor_value(const CT_PTR tensor, unsigned int rows, unsigned int cols);
 
 #endif //AULDO_CV_COMPUTE_TENSOR_H
