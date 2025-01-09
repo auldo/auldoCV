@@ -7,6 +7,9 @@
 #include <_stdlib.h>
 
 #define CN auldo_cv_compute_node
+#define CN_SCALAR_CACHE auldo_cv_compute_node_scalar_cache
+#define CN_CACHE auldo_cv_compute_node_cache
+
 #define CN_PTR struct auldo_cv_compute_node*
 
 #define CN_TYPE double
@@ -23,10 +26,18 @@
 #define CONST(x) constant(x)
 #define VAR(x) scalar(x)
 
-#define PLUS(x, y) create_operator_compute_node(CN_OP_PLUS, x, y)
-#define PLUS_CONST(x, y) create_operator_compute_node(CN_OP_PLUS_CONST, x CONST(x))
+#define SUM(x, y) create_operator_compute_node(CN_OP_SUM, x, y)
+#define SUM_CONST(x, y) create_operator_compute_node(CN_OP_SUM_CONST, x CONST(x))
 
+struct CN_SCALAR_CACHE {
+    void *gradient;
+};
 
+struct CN_CACHE {
+    void* first;
+    void* second;
+    void* gradient;
+};
 
 struct CN {
 
@@ -40,11 +51,20 @@ struct CN {
     /// If op == NULL this may be the constant represented by this node (double*)
     /// If op != NULL this may be the second operand (struct auldo_cv_compute_node*)
     void* second;
+
+    /// NULL for constant.
+    /// Scalar cache for scalar containing only the gradient.
+    /// Full cache for operator nodes.
+    void* cache;
+
 };
 
 // General
 void free_compute_node(CN_PTR node);
 void assert_null(const void* ptr);
+void init_cache(CN_PTR node);
+void set_cache(int address, CN_PTR node, CN_TYPE value);
+CN_TYPE get_cache(int address, CN_PTR node);
 
 // Scalars
 CN_PTR scalar(CN_TYPE val);
@@ -66,5 +86,8 @@ void set_value(CN_PTR node, CN_TYPE val);
 // Operators
 void _validate_operator_inputs(CN_OP_TYPE operator, CN_PTR first, CN_PTR second);
 CN_PTR create_operator_compute_node(CN_OP_TYPE operator, CN_PTR first, CN_PTR second);
+CN_OP_TYPE get_operator(const CN_PTR node);
+CN_BOOL_TYPE compute_node_is_operator(const CN_PTR node);
+void assert_operator(const CN_PTR node);
 
 #endif //AULDO_CV_COMPUTE_NODE_H
