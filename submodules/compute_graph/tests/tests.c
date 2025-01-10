@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "compute_graph.h"
+#include <malloc/malloc.h>
 
 void setUp() {
     // set stuff up here
@@ -117,6 +118,18 @@ void access_tensor_tests() {
     free(get_vec_compute_tensor_value(view, 5));
     insert_into_vec_compute_tensor(view, CONST(14), 5);
     TEST_ASSERT_EQUAL(14, value(get_mat_compute_tensor_value(tensor, 4, 5)));
+
+    CT_PTR scalar_node = access_tensor(view, 5);
+    TEST_ASSERT_EQUAL(14, value(get_compute_tensor_value(scalar_node, NULL)));
+}
+
+void compute_tensor_free_tests() {
+    CT_PTR tensor = create_mat_compute_tensor(10, 15);
+    free_compute_tensor(tensor);
+    TEST_ASSERT_EQUAL(0, malloc_size(tensor));
+    CT_PTR scalar_tensor = create_scalar_compute_tensor(CONST(4));
+    free_compute_tensor(scalar_tensor);
+    TEST_ASSERT_EQUAL(0, malloc_size(scalar_tensor));
 }
 
 // not needed when using generate_test_runner.rb
@@ -129,5 +142,6 @@ int main(void) {
     RUN_TEST(mat_compute_tensor_tests);
     RUN_TEST(scalar_compute_tensor_tests);
     RUN_TEST(access_tensor_tests);
+    RUN_TEST(compute_tensor_free_tests);
     return UNITY_END();
 }

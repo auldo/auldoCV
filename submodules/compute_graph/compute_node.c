@@ -3,9 +3,13 @@
 // General
 
 void free_compute_node(CN_PTR node) {
+    if(node == NULL)
+        return;
     free(node->first);
     free(node->second);
     free(node->op);
+    if(node->cache != NULL)
+        free(node->cache);
     free(node);
 }
 

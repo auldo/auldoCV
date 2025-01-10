@@ -21,6 +21,8 @@ struct CT {
     CN_PTR* data;
 };
 
+void free_compute_tensor(CT_PTR tensor);
+
 unsigned int transform_indices(const CT_PTR tensor, unsigned int* indices);
 
 CT_PTR create_compute_tensor(unsigned int rank, unsigned int* indices);

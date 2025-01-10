@@ -1,5 +1,13 @@
 #include "compute_tensor.h"
 
+void free_compute_tensor(CT_PTR tensor) {
+    free(tensor->dimensions);
+    for(unsigned int i = 0; i < tensor->length; ++i)
+        free_compute_node(tensor->data[i]);
+    free(tensor->data);
+    free(tensor);
+}
+
 CT_PTR create_scalar_compute_tensor(CN_PTR node) {
     CN_PTR* nodes = malloc(sizeof(CN_PTR));
     nodes[0] = node;
@@ -46,6 +54,8 @@ CT_PTR access_tensor(const CT_PTR tensor, int index) {
         THROW("expected tensor of min rank 1");
     if(tensor->rank == 1)
         return create_scalar_compute_tensor(tensor->data[index]);
+    if(index >= tensor->dimensions[0])
+        THROW("out of range");
     unsigned int rank = tensor->rank - 1;
     unsigned int length = tensor->length / tensor->dimensions[0];
     unsigned int* dimensions = malloc(rank * sizeof(unsigned int));
