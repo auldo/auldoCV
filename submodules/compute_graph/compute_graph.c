@@ -1,14 +1,14 @@
 #include "compute_graph.h"
 
-CN_TYPE run_compute_graph_forward(CN_PTR node) {
+CN_TYPE cg_forward(CN_PTR node) {
     if(compute_node_is_scalar_or_constant(node))
         return value(node);
 
     if(node->first != NULL)
-        set_cache(1, node, run_compute_graph_forward(node->first));
+        set_cache(1, node, cg_forward(node->first));
 
     if(node->second != NULL)
-        set_cache(2, node, run_compute_graph_forward(node->second));
+        set_cache(2, node, cg_forward(node->second));
 
     CN_OP_TYPE op = get_operator(node);
 

@@ -58,13 +58,13 @@ void test_operator_compute_node() {
 
 void test_forward_run() {
     CN_PTR a = VAR(4.5);
-    TEST_ASSERT_EQUAL(4.5, run_compute_graph_forward(a));
+    TEST_ASSERT_EQUAL(4.5, cg_forward(a));
 
     CN_PTR b = VAR(5.5);
-    TEST_ASSERT_EQUAL(5.5, run_compute_graph_forward(b));
+    TEST_ASSERT_EQUAL(5.5, cg_forward(b));
 
     CN_PTR sum = SUM(a, b);
-    CN_TYPE result = run_compute_graph_forward(sum);
+    CN_TYPE result = cg_forward(sum);
 
     TEST_ASSERT_EQUAL(4.5, get_cache(1, sum));
     TEST_ASSERT_EQUAL(5.5, get_cache(2, sum));
