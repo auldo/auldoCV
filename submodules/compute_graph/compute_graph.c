@@ -1,22 +1,22 @@
 #include "compute_graph.h"
 
-CN_TYPE cg_forward(CN_PTR node) {
-    if(compute_node_is_scalar_or_constant(node))
-        return value(node);
+ComputeNodeValue cg_forward(ComputeNodeRef node) {
+    if(cnIsConstantOrVariable(node))
+        return cnUnwrap(node);
 
     if(node->first != NULL)
-        set_cache(1, node, cg_forward(node->first));
+        cnSetCache(1, node, cg_forward(node->first));
 
     if(node->second != NULL)
-        set_cache(2, node, cg_forward(node->second));
+        cnSetCache(2, node, cg_forward(node->second));
 
-    CN_OP_TYPE op = get_operator(node);
+    ComputeNodeOperatorType op = cnGetOperator(node);
 
     if(op == CN_OP_SUM || op == CN_OP_SUM_CONST)
-        return get_cache(1, node) + get_cache(2, node);
+        return cnGetCache(1, node) + cnGetCache(2, node);
 
     if(op == CN_OP_PRODUCT || op == CN_OP_PRODUCT_CONST)
-        return get_cache(1, node) * get_cache(2, node);
+        return cnGetCache(1, node) * cnGetCache(2, node);
 
     THROW("bad operator");
 }

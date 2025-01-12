@@ -3,13 +3,13 @@
 void free_compute_tensor(CT_PTR tensor) {
     free(tensor->dimensions);
     for(unsigned int i = 0; i < tensor->length; ++i)
-        free_compute_node(tensor->data[i]);
+        cnFree(tensor->data[i]);
     free(tensor->data);
     free(tensor);
 }
 
-CT_PTR create_scalar_compute_tensor(CN_PTR node) {
-    CN_PTR* nodes = malloc(sizeof(CN_PTR));
+CT_PTR create_scalar_compute_tensor(ComputeNodeRef node) {
+    ComputeNodeRef* nodes = malloc(sizeof(ComputeNodeRef));
     nodes[0] = node;
 
     CT_PTR tensor = malloc(sizeof(struct CT));
@@ -29,7 +29,7 @@ CT_PTR create_compute_tensor(unsigned int rank, unsigned int* indices) {
     for (unsigned int i = 0; i < rank; i++)
         length *= dimensions[i];
 
-    CN_PTR* nodes = malloc(length * sizeof(CN_PTR));
+    ComputeNodeRef* nodes = malloc(length * sizeof(ComputeNodeRef));
     for(unsigned int i = 0; i < length; ++i) {
         nodes[i] = NULL;
     }
@@ -94,27 +94,27 @@ unsigned int transform_indices(const CT_PTR tensor, unsigned int* indices) {
     return result;
 }
 
-void insert_into_compute_tensor(CT_PTR tensor, CN_PTR node, unsigned int* indices) {
+void insert_into_compute_tensor(CT_PTR tensor, ComputeNodeRef node, unsigned int* indices) {
     unsigned int index = transform_indices(tensor, indices);
     if(index >= tensor->length)
         THROW("out of bounds");
     tensor->data[index] = node;
 }
 
-void insert_into_mat_compute_tensor(CT_PTR tensor, CN_PTR node, unsigned int rows, unsigned int cols) {
+void insert_into_mat_compute_tensor(CT_PTR tensor, ComputeNodeRef node, unsigned int rows, unsigned int cols) {
     unsigned int indices[2];
     indices[0] = rows;
     indices[1] = cols;
     return insert_into_compute_tensor(tensor, node, indices);
 }
 
-void insert_into_vec_compute_tensor(CT_PTR tensor, CN_PTR node, unsigned int index) {
+void insert_into_vec_compute_tensor(CT_PTR tensor, ComputeNodeRef node, unsigned int index) {
     unsigned int indices[1];
     indices[0] = index;
     return insert_into_compute_tensor(tensor, node, indices);
 }
 
-CN_PTR get_compute_tensor_value(const CT_PTR tensor, unsigned int* indices) {
+ComputeNodeRef get_compute_tensor_value(const CT_PTR tensor, unsigned int* indices) {
     if(indices == NULL && tensor->rank == 0) {
         return tensor->data[0];
     }
@@ -126,14 +126,14 @@ CN_PTR get_compute_tensor_value(const CT_PTR tensor, unsigned int* indices) {
     return tensor->data[index];
 }
 
-CN_PTR get_mat_compute_tensor_value(const CT_PTR tensor, unsigned int rows, unsigned int cols) {
+ComputeNodeRef get_mat_compute_tensor_value(const CT_PTR tensor, unsigned int rows, unsigned int cols) {
     unsigned int indices[2];
     indices[0] = rows;
     indices[1] = cols;
     return get_compute_tensor_value(tensor, indices);
 }
 
-CN_PTR get_vec_compute_tensor_value(const CT_PTR tensor, unsigned int index) {
+ComputeNodeRef get_vec_compute_tensor_value(const CT_PTR tensor, unsigned int index) {
     unsigned int indices[1];
     indices[0] = index;
     return get_compute_tensor_value(tensor, indices);
